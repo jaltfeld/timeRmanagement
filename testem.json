@@ -1,5 +1,14 @@
 {
     "framework": "qunit",
+    "test_page": "test/timermanagement.html",
+    "disable_watching":true,
+    "launch_in_ci": [
+    	"PhantomJS"
+    ],
+    "launch_in_dev":[
+    	"PhantomJS",
+    	"Chrome"
+    ],
     "src_files": [
         "src/*.js",
         "tests/*_tests.js"
