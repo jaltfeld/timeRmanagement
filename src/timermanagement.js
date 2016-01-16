@@ -26,13 +26,6 @@
                 // // continue processing...
                 
                 // // make sure window is ready to store our custom timer handles
-                // Manager.prepStorage();
-                
-                // // create our timer & timer handle & attach the handle to the window
-                // Manager.registerTimer();
-                
-                // // store the object (in element data) to be referenced after the plugin is set and methods are being called (from the object in data)
-                // $elem.data('MGMT', Manager);
                 
             }else{
                 
@@ -43,20 +36,14 @@
             
         }else{
             
-        //     // handle call to method right now...
-        //     // check to see that method passed exists
-        //     if(this[option]){
-                
-        //         // run method
-        //         this[option](settings);
-                
-        //     }
+            // handle call to method right now...
+            // check to see that method passed exists
             
-        //     /*
-        //      *  also any other special cases, settings, flags
-        //      *  or conditions & etc. can be processed here...
-        //      * 
-        //      */
+            /*
+             *  also any other special cases, settings, flags
+             *  or conditions & etc. can be processed here...
+             * 
+             */
             
         }
 
@@ -91,154 +78,5 @@
         return contProc;
         
     }
-
-    // prototype methods generically onto ALL instances
-    $.tMgmt.prototype = {
-        
-        // // check to see if the settings contained anything - exit returning chain if not
-        // checkSettings: function(){
-            
-        //     // set continue processing flag
-        //     var contProc = true;
-            
-        //     // set flag 
-        //     contProc = (this.settings.name && typeof this.settings.name == 'string') ? contProc: false;
-        //     contProc = (this.settings.duration && typeof this.settings.duration == 'number') ? contProc: false;
-        //     contProc = (this.settings.interval == true || this.settings.timeout == true) ? contProc: false;
-        //     contProc = (this.settings.interval == true && this.settings.timeout == true) ? false: contProc;
-        //     contProc = (this.settings.callback != undefined && this.settings.callback instanceof Object) ? contProc: false;
-            
-        //     return contProc;
-            
-        // }
-        
-        // // prep for timer storage in window
-        // prepStorage: function(){
-            
-        //     // check for timerStorage in data on window object
-        //     if(!window.TMtimerStorage){
-                
-        //         // add the new property to the window object
-        //         window.TMtimerStorage = [];
-                
-        //         // add place for incrementors (if opertion needs) also in window
-        //         window.MGMTinc = {};
-                
-        //     }
-            
-        // },
-        
-        // // create the timer functionlity, register it to the window object
-        // // & add window object cleanup to callback functionality
-        // registerTimer: function(){
-            
-        //     // store context
-        //     var _self = this;
-            
-        //     // set action flag & handle & empty timer storage litteral
-        //     var action = (this.settings.interval == true) ? 'setInterval': 'setTimeout';
-        //     var timer = {};
-            
-        //     // clear any pre-existing timers with this name
-        //     this.clearFromWindow(this.settings.name);
-            
-        //     // set up timer w/handle
-        //     timer[this.settings.name] = window[action](function(){
-                
-        //         // run callback
-        //         _self.settings.callback();
-                
-        //         // if this timer is a timeout clear it & remove it
-        //         if(action == 'setTimeout'){
-                    
-        //             // clear & remove
-        //             _self.clearFromWindow(this.settings.name);
-                    
-        //         }
-                
-        //     }, this.settings.duration);
-            
-        //     // declare incremetor for possible use w/this timer
-        //     window.MGMTinc[this.settings.name] = this.settings.startingInc;
-            
-        //     // push onto window
-        //     window.TMtimerStorage.push(timer);
-            
-        // },
-        
-        // // clear the timer using a parameter to look for it's name
-        // clearFromWindow: function(name){
-            
-        //     // store context
-        //     var _self = this;
-            
-        //     // loop through the window's storage array
-        //     for(var i=0; i<window.TMtimerStorage.length; i++){
-                
-        //         // get the key of the current litteral
-        //         for(key in window.TMtimerStorage[i]){
-                    
-        //             // compare key to name
-        //             if(key == name){
-                        
-        //                 // clear it
-        //                 clearTimeout(window.TMtimerStorage[i][key]);
-        //                 clearInterval(window.TMtimerStorage[i][key]);
-                        
-        //                 // remove it from window storage
-        //                 _self.removeTimer(i);
-                        
-        //                 // also destroy the associated incrementor
-        //                 window.MGMTinc[this.settings.name] = null;
-                        
-        //             }
-                    
-        //         }
-                
-        //     }
-            
-        // },
-        
-        // // remove specific array member holding a timer from window storage
-        // removeTimer: function(inc){
-            
-        //     // slice array member out & destroy
-        //     var trash = window.TMtimerStorage.slice(inc, inc+1);
-        //     var trash = null;
-            
-        // },
-        
-        // // generic "clear" method to be called by the user via the plugin
-        // clear: function(name){
-            
-        //     // pass to this.clearFromWindow
-        //     this.clearFromWindow(name);
-        //     //console.log('timer "'+name+'" cleared');
-        // },
-        
-        // // remove all timers from window storage (clear everything)
-        // clearAll: function(){
-            
-        //     // store context
-        //     var _self = this;
-            
-        //     // loop through each timer stored in the window
-        //     for(var i=0; i<TMtimerStorage.length; i++){
-                
-        //         // get the key of the litteral
-        //         for(key in TMtimerStorage[i]){
-                    
-        //             // pass to clear method by name
-        //             _self.clear(key);
-                    
-        //         }
-                
-        //     }
-        //     //console.log('all timers cleared');
-        // }
-        
-    }
-
-    return this;
 
 }(jQuery));
