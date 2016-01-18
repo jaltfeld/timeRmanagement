@@ -51,7 +51,9 @@
 
         // pass back object of public methods and properties
         var publicObject = {
-            options: $.tMgmt.options
+            options: $.tMgmt.options,
+            clear: $.tMgmt.clear,
+            clearAll: $.tMgmt.clearAll
         }
         return publicObject;   
         
@@ -108,7 +110,7 @@
         var _self = this;
         
         // set action flag & handle & empty timer storage litteral
-        var action = (this.options.interval == true) ? 'setInterval': 'setTimeout';
+        var action = (this.options.interval === true) ? 'setInterval': 'setTimeout';
         var timer = {};
         
         // clear any pre-existing timers with this name
@@ -121,7 +123,7 @@
             _self.options.callback();
             
             // if this timer is a timeout clear it & remove it
-            if(action == 'setTimeout'){
+            if(action === 'setTimeout'){
                 
                 // clear & remove
                 _self.clearFromWindow(_self.options.name);
@@ -135,7 +137,7 @@
         
         // push onto window
         window.TMtimerStorage.push(timer);
-        
+
     },
 
     // clear the timer using a parameter to look for it's name
@@ -151,7 +153,7 @@
             for(key in window.TMtimerStorage[i]){
                 
                 // compare key to name
-                if(key == name){
+                if(key === name){
                     
                     // clear it
                     clearTimeout(window.TMtimerStorage[i][key]);
@@ -189,6 +191,35 @@
         // reset window.TMtimerStorage to the value of captureArr
         window.TMtimerStorage = captureArr;
 
+    },
+    
+    // generic "clear" method to be called by the user via the plugin
+    $.tMgmt.clear = function(name){
+        
+        // // pass to this.clearFromWindow
+        // this.clearFromWindow(name);
+        // //console.log('timer "'+name+'" cleared');
+    },
+    
+    // remove all timers from window storage (clear everything)
+    $.tMgmt.clearAll = function(){
+        
+        // // store context
+        // var _self = this;
+        
+        // // loop through each timer stored in the window
+        // for(var i=0; i<TMtimerStorage.length; i++){
+            
+        //     // get the key of the litteral
+        //     for(key in TMtimerStorage[i]){
+                
+        //         // pass to clear method by name
+        //         _self.clear(key);
+                
+        //     }
+            
+        // }
+        //console.log('all timers cleared');
     }
 
 }(jQuery));

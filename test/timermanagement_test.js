@@ -165,8 +165,13 @@
 
 	test('$.tMgmt returns back public methods only', function(assert){
 		var tm = $.tMgmt(validOptions);
-		assert.equal(tm.checkOptions, undefined, "private methods should not be available");
-		assert.equal(tm.prepStorage, undefined, "private methods should not be available");
+		assert.equal(tm.checkOptions, undefined, "private method 'checkOptions' should not be available");
+		assert.equal(tm.prepStorage, undefined, "private method 'prepStorage' should not be available");
+		assert.equal(tm.registerTimer, undefined, "private method 'registerTimer' should not be available");
+		assert.equal(tm.clearFromWindow, undefined, "private method 'clearFromWindow' should not be available");
+		assert.equal(tm.removeTimer, undefined, "private method 'removeTimer' should not be available");
+		assert.equal(isFunc(tm.clear), true, "public method 'clear' should be available");
+		assert.equal(isFunc(tm.clearAll), true, "public method 'clearAll' should be available");
 	});
 
 	module('jQuery.tMgmt - usage');
