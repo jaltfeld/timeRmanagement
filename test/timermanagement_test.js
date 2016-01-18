@@ -1,16 +1,5 @@
 (function ($) {
-	module('jQuery.tMgmt - setup', {
-		beforeEach: function(){
-			$.tMgmt.options = {};
-			window.TMtimerStorage = undefined;
-			window.MGMTinc = undefined;
-		},
-		afterEach: function(){
-			$.tMgmt.options = {};
-			window.TMtimerStorage = undefined;
-			window.MGMTinc = undefined;
-		}
-	});
+	module('jQuery.tMgmt - setup');
 
 	var isOb = function(subject){
 		return (subject instanceof Object) ? true: false;
@@ -143,12 +132,13 @@
 		assert.equal(window.TMtimerStorage, undefined, "window.TMtimerStorage should not exist before $.tMgmt is instantiated");
 		assert.equal(window.MGMTinc, undefined, "window.MGMTinc should not exist before $.tMgmt is instantiated");
 		$.tMgmt(validOptions);
+		assert.equal(isArray(window.TMtimerStorage), true, "window.TMtimerStorage should be set after $.tMgmt is instantiated");
 		assert.equal(isOb(window.MGMTinc), true, "window.MGMTinc should be set after $.tMgmt is instantiated");
 	});
 
 	test('$.tMgmt should register a timer onto the window.TMtimerStorage', function(assert){
 		if(window.TMtimerStorage !== undefined){window.TMtimerStorage = undefined}
-		$.tMgmt(validOptions);
+		var tm = $.tMgmt(validOptions);
 		assert.equal(window.TMtimerStorage.length, 1, "$.tMgmt should register a timer to the window.TMtimerStorage array");
 	});
 
@@ -157,20 +147,21 @@
 		var tm1 = $.tMgmt(validOptions);
 		assert.equal(window.TMtimerStorage.length, 1, "$.tMgmt has registered 1 timer named 'test'");
 		var tm2 = $.tMgmt(validOptions);
+		var done = assert.async();
 		window.setTimeout(function(){
-			console.log(window.TMtimerStorage.length);
-			// assert.equal(window.TMtimerStorage.length, 1, "$.tMgmt has replaced old duplicate with new duplicate");
-		}, 1005);
+			assert.equal(window.TMtimerStorage.length, 1, "$.tMgmt has replaced old duplicate with new duplicate");
+			done();
+		}, 100);
 	});
 
-	// test('if $.tMgmt has set a timeout $.tMgmt should clear it after the callback has run', function(assert){
-	// 	if(window.TMtimerStorage !== undefined){window.TMtimerStorage = undefined}
-	// 	var tm = $.tMgmt(validOptions);
-	// 	assert.equal(tm.options.timeout, true, "$.tMgmt has been set with a timeout");
-	// 	window.setTimeout(function() {
-	// 		console.log('removing 1 timeout at its end: '+window.TMtimerStorage.length);
-	// 	}, 1100);
-	// });
+	test('if $.tMgmt has set a timeout $.tMgmt should clear it after the callback has run', function(assert){
+		if(window.TMtimerStorage !== undefined){window.TMtimerStorage = undefined}
+		var tm = $.tMgmt(validOptions);
+		assert.equal(tm.options.timeout, true, "$.tMgmt has been set with a timeout");
+		window.setTimeout(function() {
+			assert.equal(window.TMtimerStorage.length, 0, "the timeout should be removed from the TMtimerStorage array");
+		}, 1100);
+	});
 
 	test('$.tMgmt returns back public methods only', function(assert){
 		var tm = $.tMgmt(validOptions);

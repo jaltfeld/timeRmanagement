@@ -82,7 +82,7 @@
         
         return contProc;
         
-    },
+    }
 
     // prep for timer storage in window
     $.tMgmt.prepStorage = function(){
@@ -103,7 +103,7 @@
     // create the timer functionlity, register it to the window object
     // & add window object cleanup to callback functionality
     $.tMgmt.registerTimer = function(){
-        
+
         // store context
         var _self = this;
         
@@ -111,8 +111,8 @@
         var action = (this.options.interval == true) ? 'setInterval': 'setTimeout';
         var timer = {};
         
-        // // clear any pre-existing timers with this name
-        this.clearFromWindow(_self.options.name);
+        // clear any pre-existing timers with this name
+        this.clearFromWindow(this.options.name);
         
         // set up timer w/handle
         timer[this.options.name] = window[action](function(){
@@ -173,12 +173,22 @@
 
     // remove specific array member holding a timer from window storage
     $.tMgmt.removeTimer = function(inc){
-        // console.log('about to run splice removal');
-        // splice array member out & destroy
-        window.TMtimerStorage = window.TMtimerStorage.splice(inc, 1);
-        // console.log(window.TMtimerStorage);
-        // console.log(window.TMtimerStorage.length);
-        
+
+        // create a place to capture timer handles to keep
+        var captureArr = [];
+
+        // loop through the TMtimerStorage array
+        for(var i=0; i<window.TMtimerStorage.length; i++){
+
+            // store all members in the captureArr who's IDs dont match the inc parameter
+            if(i != inc){
+                captureArr.push(window.TMtimerStorage[i]);
+            }
+        }
+
+        // reset window.TMtimerStorage to the value of captureArr
+        window.TMtimerStorage = captureArr;
+
     }
 
 }(jQuery));
