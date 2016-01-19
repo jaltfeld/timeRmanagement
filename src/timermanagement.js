@@ -9,6 +9,166 @@
 
     $.tMgmt = function (options) { //, settings) {
 
+        // Default options.
+        $.tMgmt.options = {
+        };
+
+
+        // encapulate private methods so they arent readily available
+        var privateMethods = {
+
+            // check to see if the settings contained anything - exit returning chain if not
+            checkOptions: function(options){
+                
+                // set continue processing flag
+                var contProc = true;
+                
+                // define flag 
+                contProc = (options.name && typeof options.name === 'string') ? contProc: false;
+                contProc = (options.duration && typeof options.duration === 'number') ? contProc: false;
+                contProc = (options.interval === true || options.timeout === true) ? contProc: false;
+                contProc = (options.interval === true && options.timeout === true) ? false: contProc;
+                contProc = (options.callback !== undefined && options.callback instanceof Object) ? contProc: false;
+                
+                return contProc;
+                
+            },
+
+            // prep for timer storage in window
+            prepStorage: function(){
+                
+                // check for timerStorage in data on window object
+                if(!window.TMtimerStorage){
+                    
+                    // add the new property to the window object
+                    window.TMtimerStorage = [];
+                    
+                    // add place for incrementors (if opertion needs) also in window
+                    window.MGMTinc = {};
+                    
+                }
+                
+            },
+
+            // create the timer functionlity, register it to the window object
+            // & add window object cleanup to callback functionality
+            registerTimer: function(){
+
+                // store context
+                var _self = this;
+                
+                // set action flag & handle & empty timer storage litteral
+                var action = ($.tMgmt.options.interval === true) ? 'setInterval': 'setTimeout';
+                var timer = {};
+                
+                // clear any pre-existing timers with this name
+                this.clearFromWindow($.tMgmt.options.name);
+                
+                // set up timer w/handle
+                timer[$.tMgmt.options.name] = window[action](function(){
+                    
+                    // run callback
+                    $.tMgmt.options.callback();
+                    
+                    // if this timer is a timeout clear it & remove it
+                    if(action === 'setTimeout'){
+                        
+                        // clear & remove
+                        _self.clearFromWindow($.tMgmt.options.name);
+                        
+                    }
+                    
+                }, $.tMgmt.options.duration);
+                
+                // declare incremetor for possible use w/this timer
+                window.MGMTinc[$.tMgmt.options.name] = $.tMgmt.options.startingInc;
+                
+                // push onto window
+                window.TMtimerStorage.push(timer);
+
+            },
+
+            // clear the timer using a parameter to look for it's name
+            clearFromWindow: function(name){
+                
+                // store context
+                var _self = this;
+                
+                // loop through the window's storage array
+                for(var i=0; i<window.TMtimerStorage.length; i++){
+                    
+                    // get the key of the current litteral
+                    for(key in window.TMtimerStorage[i]){
+                        
+                        // compare key to name
+                        if(key === name){
+                            
+                            // clear it
+                            clearTimeout(window.TMtimerStorage[i][key]);
+                            clearInterval(window.TMtimerStorage[i][key]);
+                            
+                            // remove it from window storage
+                            _self.removeTimer(i);
+                            
+                            // also destroy the associated incrementor
+                            window.MGMTinc[$.tMgmt.options.name] = null;
+                            
+                        }
+                        
+                    }
+                    
+                }
+                
+            },
+
+            // remove specific array member holding a timer from window storage
+            removeTimer: function(inc){
+
+                // create a place to capture timer handles to keep
+                var captureArr = [];
+
+                // loop through the TMtimerStorage array
+                for(var i=0; i<window.TMtimerStorage.length; i++){
+
+                    // store all members in the captureArr who's IDs dont match the inc parameter
+                    if(i != inc){
+                        captureArr.push(window.TMtimerStorage[i]);
+                    }
+                }
+
+                // reset window.TMtimerStorage to the value of captureArr
+                window.TMtimerStorage = captureArr;
+
+            }
+
+        };
+
+        // generic "clear" method to be called by the user via the plugin
+        var clear = function(name){
+            
+            // pass to this.clearFromWindow
+            privateMethods.clearFromWindow(name);
+
+        };
+        
+        // remove all timers from window storage (clear everything)
+        var clearAll = function(){
+            
+            // loop through each timer stored in the window
+            for(var i=0; i<TMtimerStorage.length; i++){
+                
+                // get the key of the litteral
+                for(key in TMtimerStorage[i]){
+                    
+                    // pass to clear method by name
+                    this.clear(key);
+                    
+                }
+                
+            }
+
+        };
+
         // determine if option is an initializing object or a method call (string)
         if(options instanceof Object){
             // first run of plugin (which sets the options) should always enter into this block
@@ -21,13 +181,13 @@
             $.tMgmt.options = $.extend({}, $.tMgmt.options, options);
 
             // see if there was enough settings data passed in to use the plugin
-            if($.tMgmt.checkOptions($.tMgmt.options)){
+            if(privateMethods.checkOptions($.tMgmt.options)){
                 
                 // continue processing... make sure window is ready to store our custom timer handles
-                $.tMgmt.prepStorage();
+                privateMethods.prepStorage();
 
                 // create our timer & timer handle & attach the handle to the window
-                $.tMgmt.registerTimer();
+                privateMethods.registerTimer();
                 
             }else{
                 
@@ -49,177 +209,12 @@
             
         }
 
-        // pass back object of public methods and properties
-        var publicObject = {
+        return {
             options: $.tMgmt.options,
-            clear: $.tMgmt.clear,
-            clearAll: $.tMgmt.clearAll
+            clear: clear,
+            clearAll: clearAll
         }
-        return publicObject;   
         
     };
-
-    // Default options.
-    $.tMgmt.options = {
-    };
-
-    // set flag property exposing whether options check, to allow plugin instantiation, has occured
-    $.tMgmt.optionsChecked = null;
-
-    // check to see if the settings contained anything - exit returning chain if not
-    $.tMgmt.checkOptions = function(options){
-        
-        // set continue processing flag
-        var contProc = true;
-        
-        // define flag 
-        contProc = (options.name && typeof options.name === 'string') ? contProc: false;
-        contProc = (options.duration && typeof options.duration === 'number') ? contProc: false;
-        contProc = (options.interval === true || options.timeout === true) ? contProc: false;
-        contProc = (options.interval === true && options.timeout === true) ? false: contProc;
-        contProc = (options.callback !== undefined && options.callback instanceof Object) ? contProc: false;
-        
-        // define flag property indicating this check has run
-        $.tMgmt.optionsChecked = true;
-        
-        return contProc;
-        
-    }
-
-    // prep for timer storage in window
-    $.tMgmt.prepStorage = function(){
-        
-        // check for timerStorage in data on window object
-        if(!window.TMtimerStorage){
-            
-            // add the new property to the window object
-            window.TMtimerStorage = [];
-            
-            // add place for incrementors (if opertion needs) also in window
-            window.MGMTinc = {};
-            
-        }
-        
-    },
-
-    // create the timer functionlity, register it to the window object
-    // & add window object cleanup to callback functionality
-    $.tMgmt.registerTimer = function(){
-
-        // store context
-        var _self = this;
-        
-        // set action flag & handle & empty timer storage litteral
-        var action = (this.options.interval === true) ? 'setInterval': 'setTimeout';
-        var timer = {};
-        
-        // clear any pre-existing timers with this name
-        this.clearFromWindow(this.options.name);
-        
-        // set up timer w/handle
-        timer[this.options.name] = window[action](function(){
-            
-            // run callback
-            _self.options.callback();
-            
-            // if this timer is a timeout clear it & remove it
-            if(action === 'setTimeout'){
-                
-                // clear & remove
-                _self.clearFromWindow(_self.options.name);
-                
-            }
-            
-        }, _self.options.duration);
-        
-        // declare incremetor for possible use w/this timer
-        window.MGMTinc[_self.options.name] = _self.options.startingInc;
-        
-        // push onto window
-        window.TMtimerStorage.push(timer);
-
-    },
-
-    // clear the timer using a parameter to look for it's name
-    $.tMgmt.clearFromWindow = function(name){
-        
-        // store context
-        var _self = this;
-        
-        // loop through the window's storage array
-        for(var i=0; i<window.TMtimerStorage.length; i++){
-            
-            // get the key of the current litteral
-            for(key in window.TMtimerStorage[i]){
-                
-                // compare key to name
-                if(key === name){
-                    
-                    // clear it
-                    clearTimeout(window.TMtimerStorage[i][key]);
-                    clearInterval(window.TMtimerStorage[i][key]);
-                    
-                    // remove it from window storage
-                    _self.removeTimer(i);
-                    
-                    // also destroy the associated incrementor
-                    window.MGMTinc[_self.options.name] = null;
-                    
-                }
-                
-            }
-            
-        }
-        
-    },
-
-    // remove specific array member holding a timer from window storage
-    $.tMgmt.removeTimer = function(inc){
-
-        // create a place to capture timer handles to keep
-        var captureArr = [];
-
-        // loop through the TMtimerStorage array
-        for(var i=0; i<window.TMtimerStorage.length; i++){
-
-            // store all members in the captureArr who's IDs dont match the inc parameter
-            if(i != inc){
-                captureArr.push(window.TMtimerStorage[i]);
-            }
-        }
-
-        // reset window.TMtimerStorage to the value of captureArr
-        window.TMtimerStorage = captureArr;
-
-    },
-    
-    // generic "clear" method to be called by the user via the plugin
-    $.tMgmt.clear = function(name){
-        
-        // // pass to this.clearFromWindow
-        // this.clearFromWindow(name);
-        // //console.log('timer "'+name+'" cleared');
-    },
-    
-    // remove all timers from window storage (clear everything)
-    $.tMgmt.clearAll = function(){
-        
-        // // store context
-        // var _self = this;
-        
-        // // loop through each timer stored in the window
-        // for(var i=0; i<TMtimerStorage.length; i++){
-            
-        //     // get the key of the litteral
-        //     for(key in TMtimerStorage[i]){
-                
-        //         // pass to clear method by name
-        //         _self.clear(key);
-                
-        //     }
-            
-        // }
-        //console.log('all timers cleared');
-    }
 
 }(jQuery));

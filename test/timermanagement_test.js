@@ -19,33 +19,30 @@
     	interval: false,
     	timeout: true,
     	callback: function(){
-    		// console.log('callback')
+    		//do something;
     	}
 	}
 
 	test('$.tMgmt exists', function(assert){
-		assert.notEqual($.tMgmt, undefined, "$.tMgmt should be an object if it exists");
+		assert.notEqual($.tMgmt, undefined, "$.tMgmt should not be undefined if it exists");
+		assert.equal(isOb($.tMgmt), true, "$.tMgmt should be an object if it exists");
 	});
 
 	test('$.tMgmt default options exist', function(assert){
-		assert.notEqual($.tMgmt.options, undefined, "$.tMgmt.options should be an object if exists");
+		var tm = $.tMgmt(undefined)
+		assert.notEqual($.tMgmt.options, undefined, "$.tMgmt.options should be defined if exists");
 		assert.equal(isOb($.tMgmt.options), true, "$.tMgmt should be an object");
 	});
 
 	test('$.tMgmt accepts options', function(assert){
-		$.tMgmt(validOptions);
-		assert.equal($.tMgmt.options.name, "test", "$.tMgmt.options should be an object if exists");
+		var tm = $.tMgmt(validOptions);
+		assert.equal(tm.options.name, "test", "$.tMgmt.options.name should be set");
 	});
 
-	test('$.tMgmt should run a "continue processing" check function when first instantiated', function(assert){
-		$.tMgmt(validOptions);
-		assert.equal(isFunc($.tMgmt.checkOptions), true, "the checkOptions function should exist");
-		assert.equal($.tMgmt.optionsChecked, true, "checkOptions() method set $.tMgmt.optionsChecked property to true");
-	});
-
-	test('checkOptions() method continues processing when options are set properly', function(assert){
-		$.tMgmt(validOptions);
-		assert.notEqual($.tMgmt.options, {}, "$.tMgmt is not null");
+	test('$.tMgmt should run checkOptions check function when first instantiated', function(assert){
+		var tm = $.tMgmt(validOptions);
+		assert.equal(tm.options.name, "test", "$.tMgmt.options.name should be set");
+		assert.notEqual(tm.options, {}, "the checkOptions function should pass and not return an empty options litteral");
 	});
 
 	test('checkOptions() method ends processing/sets $.tMgmt.options to {} when options are not properly', function(assert){
