@@ -44,7 +44,7 @@
                     window.TMtimerStorage = [];
                     
                     // add place for incrementors (if opertion needs) also in window
-                    window.MGMTinc = {};
+                    window.MGMTinc = [];
                     
                 }
                 
@@ -77,14 +77,26 @@
                         _self.clearFromWindow($.tMgmt.options.name);
                         
                     }
+
+                    // if this timer is an interval it should be incremented
+                    if(action === 'setInterval'){
+
+                        // loop through window.MGMTinc array and find the right object key
+                        // de-increment the incrementor if it is greater than 0
+                        // de-increment
+                        // remove it at zero
+
+                    }
                     
                 }, $.tMgmt.options.duration);
                 
-                // declare incremetor for possible use w/this timer
-                window.MGMTinc[$.tMgmt.options.name] = $.tMgmt.options.startingInc;
-                
                 // push onto window
                 window.TMtimerStorage.push(timer);
+                
+                // declare incremetor for possible use w/this timer
+                var newInc = {};
+                newInc[$.tMgmt.options.name] = $.tMgmt.options.startingInc || null;
+                window.MGMTinc.push(newInc);
 
             },
 
@@ -111,7 +123,7 @@
                             _self.removeTimer(i);
                             
                             // also destroy the associated incrementor
-                            window.MGMTinc[$.tMgmt.options.name] = null;
+                            _self.removeIncrementor(i);
                             
                         }
                         
@@ -138,6 +150,26 @@
 
                 // reset window.TMtimerStorage to the value of captureArr
                 window.TMtimerStorage = captureArr;
+
+            },
+
+            // remove specific array member holding a timer from window storage
+            removeIncrementor: function(inc){
+
+                // create a place to capture timer handles to keep
+                var captureArr = [];
+
+                // loop through the TMtimerStorage array
+                for(var i=0; i<window.MGMTinc.length; i++){
+
+                    // store all members in the captureArr who's IDs dont match the inc parameter
+                    if(i != inc){
+                        captureArr.push(window.MGMTinc[i]);
+                    }
+                }
+
+                // reset window.TMtimerStorage to the value of captureArr
+                window.MGMTinc = captureArr;
 
             }
 

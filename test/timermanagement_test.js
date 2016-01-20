@@ -139,14 +139,16 @@
 		assert.equal(window.TMtimerStorage.length, 1, "$.tMgmt should register a timer to the window.TMtimerStorage array");
 	});
 
-	test('if $.tMgmt already has a timer with the same name it should clear it and replace with the new one', function(assert){
+	test('$.tMgmt has a timer/incrementor, registering a duplicate should clear the old ones and replace with the new ones', function(assert){
 		if(window.TMtimerStorage !== undefined){window.TMtimerStorage = undefined}
 		var tm1 = $.tMgmt(validOptions);
 		assert.equal(window.TMtimerStorage.length, 1, "$.tMgmt has registered 1 timer named 'test'");
+		assert.equal(window.MGMTinc.length, 1, "$.tMgmt has registered 1 incrementor named 'test'");
 		var tm2 = $.tMgmt(validOptions);
 		var done = assert.async();
 		window.setTimeout(function(){
-			assert.equal(window.TMtimerStorage.length, 1, "$.tMgmt has replaced old duplicate with new duplicate");
+			assert.equal(window.TMtimerStorage.length, 1, "$.tMgmt has replaced old timer with new timer");
+			assert.equal(window.MGMTinc.length, 1, "$.tMgmt has replaced old incrementor with new incrementor");
 			done();
 		}, 100);
 	});
@@ -167,10 +169,43 @@
 		assert.equal(tm.registerTimer, undefined, "private method 'registerTimer' should not be available");
 		assert.equal(tm.clearFromWindow, undefined, "private method 'clearFromWindow' should not be available");
 		assert.equal(tm.removeTimer, undefined, "private method 'removeTimer' should not be available");
+		assert.equal(tm.removeIncrementor, undefined, "private method 'removeIncrementor' should not be available");
 		assert.equal(isFunc(tm.clear), true, "public method 'clear' should be available");
 		assert.equal(isFunc(tm.clearAll), true, "public method 'clearAll' should be available");
 	});
 
+
 	module('jQuery.tMgmt - usage');
+
+	var validOptionsInc = {
+		name: 'test',
+    	duration: 1000,
+    	interval: true,
+    	timeout: false,
+    	startingInc: 10,
+    	callback: function(){
+    		console.log('hello');
+    	}
+	}	
+
+	// test('if optional startingInc property is set w/interval to true, interval should run that many times', function(assert){
+	// 	var tm = $.tMgmt(validOptionsInc);
+	// 	var done1 = assert.async();
+	// 	var done2 = assert.async();
+	// 	var inc = 9;
+	// 	var intHandle = window.setInterval(function(){
+	// 		if(inc == 1){
+	// 			assert.equal(window.MGMTinc['test'], 1, 'the test incrementor should be down to one');
+	// 			console.log('length of MGMTinc '+window.MGMTinc['test']);
+	// 			done1();	
+	// 		}
+	// 		if(inc == 0){
+	// 			assert.equal(window.MGMTinc.length, 0, 'the test incrementor should be removed');
+	// 			done2();
+	// 			clearInterval(intHandle);
+	// 		}
+	// 		inc--;
+	// 	}, 1000);
+	// });
   
 }(jQuery));
