@@ -57,15 +57,40 @@
                 // store context
                 var _self = this;
                 
-                // set action flag & handle & empty timer storage litteral
-                var action = ($.tMgmt.options.interval === true) ? 'setInterval': 'setTimeout';
+                // prep timer storage litteral
                 var timer = {};
+                timer[$.tMgmt.options.name] = null;
                 
                 // clear any pre-existing timers with this name
                 this.clearFromWindow($.tMgmt.options.name);
                 
+                // push onto window
+                window.TMtimerStorage.push(timer);
+                
+                // declare incremetor for possible use w/this timer
+                var newInc = {};
+                newInc[$.tMgmt.options.name] = $.tMgmt.options.incrementBy || null;
+                window.MGMTinc.push(newInc);
+
+                // kick off the timer
+                _self.timerCreate();
+
+            },
+
+            // add (and kick off) timer functionality to TMtimerStorage array
+            timerCreate: function(){
+
+                // store context
+                var _self = this;
+
+                // prep action flag to determine if a timeout or an inrterval is being set
+                var action = ($.tMgmt.options.interval === true) ? 'setInterval': 'setTimeout';
+
+                // store index this timer (and it's incrementor) will sit at in their matching arrays
+                var index = window.TMtimerStorage.length - 1;
+
                 // set up timer w/handle
-                timer[$.tMgmt.options.name] = window[action](function(){
+                window.TMtimerStorage[index][$.tMgmt.options.name] = window[action](function(){
                     
                     // run callback
                     $.tMgmt.options.callback();
@@ -79,25 +104,24 @@
                     }
 
                     // if this timer is an interval it should be incremented
-                    if(action === 'setInterval'){
+                    if(action === 'setInterval' && window.MGMTinc[index][$.tMgmt.options.name] !== null){
 
-                        // loop through window.MGMTinc array and find the right object key
-                        // de-increment the incrementor if it is greater than 0
-                        // de-increment
-                        // remove it at zero
+                        // de-increment the incrementor if it is greater than 1
+                        if(window.MGMTinc[index][$.tMgmt.options.name] > 1){
+                            console.log('firing interval '+window.MGMTinc[index][$.tMgmt.options.name]);
+                            // de-increment
+                            window.MGMTinc[index][$.tMgmt.options.name] -= 1;
+
+                        }else{
+                            console.log('firing interval '+window.MGMTinc[index][$.tMgmt.options.name]+' - last time before removal');
+                            // remove it at one
+                            _self.clearFromWindow($.tMgmt.options.name);   
+
+                        }
 
                     }
                     
                 }, $.tMgmt.options.duration);
-                
-                // push onto window
-                window.TMtimerStorage.push(timer);
-                
-                // declare incremetor for possible use w/this timer
-                var newInc = {};
-                newInc[$.tMgmt.options.name] = $.tMgmt.options.startingInc || null;
-                window.MGMTinc.push(newInc);
-
             },
 
             // clear the timer using a parameter to look for it's name
@@ -170,7 +194,7 @@
 
                 // reset window.TMtimerStorage to the value of captureArr
                 window.MGMTinc = captureArr;
-
+                console.log('interval is removed');
             }
 
         };
