@@ -57,6 +57,9 @@
 	        	callback: function(){console.log('callback')}
 			});
 			assert.deepEqual(tm1.options, {}, "$.tMgmt.options is {} - name missing");
+		});
+
+		test('checkOptions() method ends processing/sets $.tMgmt.options to {} when options are not properly', function(assert){
 			$.tMgmt.options = {};
 			var tm2 = $.tMgmt({
 				name: 10,
@@ -65,6 +68,9 @@
 	        	callback: function(){console.log('callback')}
 			});
 			assert.deepEqual(tm2.options, {}, "$.tMgmt.options is {} - name not string");
+		});
+
+		test('checkOptions() method ends processing/sets $.tMgmt.options to {} when options are not properly', function(assert){
 			$.tMgmt.options = {};
 			var tm3 = $.tMgmt({
 				name: 'test',
@@ -72,6 +78,9 @@
 	        	callback: function(){console.log('callback')}
 			});
 			assert.deepEqual(tm3.options, {}, "$.tMgmt.options is {} - duration missing");
+		});
+
+		test('checkOptions() method ends processing/sets $.tMgmt.options to {} when options are not properly', function(assert){
 			$.tMgmt.options = {};
 			var tm4 = $.tMgmt({
 				name: 'test',
@@ -80,6 +89,9 @@
 	        	callback: function(){console.log('callback')}
 			});
 			assert.deepEqual(tm4.options, {}, "$.tMgmt.options is {} - duration not number");
+		});
+
+		test('checkOptions() method ends processing/sets $.tMgmt.options to {} when options are not properly', function(assert){
 			$.tMgmt.options = {};
 			var tm5 = $.tMgmt({
 				name: 'test',
@@ -87,6 +99,9 @@
 	        	callback: function(){console.log('callback')}
 			});
 			assert.deepEqual(tm5.options, {}, "$.tMgmt.options is {} - interval & timeout missing");
+		});
+
+		test('checkOptions() method ends processing/sets $.tMgmt.options to {} when options are not properly', function(assert){
 			$.tMgmt.options = {};
 			var tm6 = $.tMgmt({
 				name: 'test',
@@ -96,6 +111,9 @@
 	        	callback: function(){console.log('callback')}
 			});
 			assert.deepEqual(tm6.options, {}, "$.tMgmt.options is {} - interval & timeout both true");
+		});
+
+		test('checkOptions() method ends processing/sets $.tMgmt.options to {} when options are not properly', function(assert){
 			$.tMgmt.options = {};
 			var tm7 = $.tMgmt({
 				name: 'test',
@@ -105,12 +123,18 @@
 	        	callback: function(){console.log('callback')}
 			});
 			assert.deepEqual(tm7.options, {}, "$.tMgmt.options is {} - interval & timeout both false");
+		});
+
+		test('checkOptions() method ends processing/sets $.tMgmt.options to {} when options are not properly', function(assert){
 			$.tMgmt.options = {};
 			var tm8 = $.tMgmt({
 				name: 'test',
 	        	timeout: true
 			});
 			assert.deepEqual(tm8.options, {}, "$.tMgmt.options is {} - callback missing");
+		});
+		
+		test('checkOptions() method ends processing/sets $.tMgmt.options to {} when options are not properly', function(assert){
 			$.tMgmt.options = {};
 			var tm9 = $.tMgmt({
 				name: 'test',
