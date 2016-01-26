@@ -11,7 +11,15 @@
     <!-- Load Testem -->
     <script src="/testem.js"></script>
     <!-- Load local lib and tests. -->
-    <script src="../src/timermanagement.js"></script>
+    <!-- ACTUAL DIST FILE <script src="../src/timermanagement.js"></script> -->
+    <!-- 
+         THIS VERSION... is NOT part of jQuery, so that...
+         the tMgmt object can be fed into the test excecution environment WITH jQuery
+         and then be added to jquery in setup and removed in teardown for each test...
+         other then that there is no difference between src/timermanagement.test
+         & test/timermanagement.test.js
+    -->
+    <script src="timermanagement.test.js"></script>
     <script src="timermanagement_test.js"></script>
     <!-- Removing access to jQuery and $. But it'll still be available as _$, if
          you REALLY want to mess around with jQuery in the console. REMEMBER WE

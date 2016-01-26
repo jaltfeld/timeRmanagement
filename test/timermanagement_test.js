@@ -1,4 +1,4 @@
-(function ($) {
+(function ($, TM) {
 
 	var isOb = function(subject){
 		return (subject instanceof Object) ? true: false;
@@ -21,7 +21,15 @@
     	}
 	}
 
-	module('jQuery.tMgmt - confirmation', function() {
+	module('jQuery.tMgmt - confirmation', function(hook) {
+
+		hook.beforeEach(function(){
+			$.tMgmt = TM;
+		});
+
+		hook.afterEach(function(){
+			delete $.tMgmt;
+		});
 
 		test('$.tMgmt exists', function(assert){
 			assert.notEqual($.tMgmt, undefined, "$.tMgmt should not be undefined if it exists");
@@ -36,7 +44,17 @@
 
 	});
 
-	module('jQuery.tMgmt - setup', function() {
+	module('jQuery.tMgmt - setup', function(hook) {
+
+		hook.beforeEach(function(){
+			$.tMgmt = TM;
+		});
+
+		hook.afterEach(function(){
+			delete $.tMgmt;
+			delete $.TMtimerStorage;
+			delete $.MGMTinc;
+		});
 
 		test('$.tMgmt accepts options', function(assert){
 			var tm = $.tMgmt(validOptions);
@@ -50,7 +68,6 @@
 		});
 
 		test('checkOptions() method ends processing/sets $.tMgmt.options to {} when options are not properly', function(assert){
-			$.tMgmt.options = {};
 			var tm1 = $.tMgmt({
 	        	duration: 1000,
 	        	timeout: true,
@@ -60,7 +77,6 @@
 		});
 
 		test('checkOptions() method ends processing/sets $.tMgmt.options to {} when options are not properly', function(assert){
-			$.tMgmt.options = {};
 			var tm2 = $.tMgmt({
 				name: 10,
 	        	duration: 1000,
@@ -71,7 +87,6 @@
 		});
 
 		test('checkOptions() method ends processing/sets $.tMgmt.options to {} when options are not properly', function(assert){
-			$.tMgmt.options = {};
 			var tm3 = $.tMgmt({
 				name: 'test',
 	        	timeout: true,
@@ -81,7 +96,6 @@
 		});
 
 		test('checkOptions() method ends processing/sets $.tMgmt.options to {} when options are not properly', function(assert){
-			$.tMgmt.options = {};
 			var tm4 = $.tMgmt({
 				name: 'test',
 	        	duration: '1000',
@@ -92,7 +106,6 @@
 		});
 
 		test('checkOptions() method ends processing/sets $.tMgmt.options to {} when options are not properly', function(assert){
-			$.tMgmt.options = {};
 			var tm5 = $.tMgmt({
 				name: 'test',
 				duration: 1000,
@@ -102,7 +115,6 @@
 		});
 
 		test('checkOptions() method ends processing/sets $.tMgmt.options to {} when options are not properly', function(assert){
-			$.tMgmt.options = {};
 			var tm6 = $.tMgmt({
 				name: 'test',
 	        	duration: 1000,
@@ -114,7 +126,6 @@
 		});
 
 		test('checkOptions() method ends processing/sets $.tMgmt.options to {} when options are not properly', function(assert){
-			$.tMgmt.options = {};
 			var tm7 = $.tMgmt({
 				name: 'test',
 	        	duration: 1000,
@@ -126,7 +137,6 @@
 		});
 
 		test('checkOptions() method ends processing/sets $.tMgmt.options to {} when options are not properly', function(assert){
-			$.tMgmt.options = {};
 			var tm8 = $.tMgmt({
 				name: 'test',
 	        	timeout: true
@@ -135,7 +145,6 @@
 		});
 		
 		test('checkOptions() method ends processing/sets $.tMgmt.options to {} when options are not properly', function(assert){
-			$.tMgmt.options = {};
 			var tm9 = $.tMgmt({
 				name: 'test',
 	        	duration: '1000',
@@ -146,17 +155,14 @@
 		});
 
 		test('$.tMgmt.prepStorage method is invoked', function(assert){
-			if(window.TMtimerStorage !== undefined){window.TMtimerStorage = undefined}
-			if(window.MGMTinc !== undefined){window.MGMTinc = undefined}
-			assert.equal(window.TMtimerStorage, undefined, "window.TMtimerStorage should not exist before $.tMgmt is instantiated");
-			assert.equal(window.MGMTinc, undefined, "window.MGMTinc should not exist before $.tMgmt is instantiated");
+			assert.equal(isArray(window.TMtimerStorage), false, "window.TMtimerStorage should not exist before $.tMgmt is instantiated");
+			assert.equal(isArray(window.MGMTinc), false, "window.MGMTinc should not exist before $.tMgmt is instantiated");
 			$.tMgmt(validOptions);
 			assert.equal(isArray(window.TMtimerStorage), true, "window.TMtimerStorage should be set after $.tMgmt is instantiated");
-			assert.equal(isOb(window.MGMTinc), true, "window.MGMTinc should be set after $.tMgmt is instantiated");
+			assert.equal(isArray(window.MGMTinc), true, "window.MGMTinc should be set after $.tMgmt is instantiated");
 		});
 
 		test('$.tMgmt should register a timer onto the window.TMtimerStorage', function(assert){
-			if(window.TMtimerStorage !== undefined){window.TMtimerStorage = undefined}
 			var tm = $.tMgmt(validOptions);
 			assert.equal(window.TMtimerStorage.length, 1, "$.tMgmt should register a timer to the window.TMtimerStorage array");
 		});
@@ -176,7 +182,17 @@
 	});
 
 
-	module('jQuery.tMgmt - usage', function() {
+	module('jQuery.tMgmt - usage', function(hook) {
+
+		hook.beforeEach(function(){
+			$.tMgmt = TM;
+		});
+
+		hook.afterEach(function(){
+			delete $.tMgmt;
+			delete $.TMtimerStorage;
+			delete $.MGMTinc;
+		});
 
 		var validOptionsInc = {
 			name: 'test',
@@ -184,12 +200,11 @@
 	    	interval: true,
 	    	incrementBy: 3,
 	    	callback: function(){
-	    		console.log('hello');
+	    		// console.log('hello');
 	    	}
 		}
 
 		test('$.tMgmt has a timer/incrementor, registering a duplicate should clear the old ones and replace with the new ones', function(assert){
-			if(window.TMtimerStorage !== undefined){window.TMtimerStorage = undefined}
 			var tm1 = $.tMgmt(validOptions);
 			assert.equal(window.TMtimerStorage.length, 1, "$.tMgmt has registered 1 timer named 'test'");
 			assert.equal(window.MGMTinc.length, 1, "$.tMgmt has registered 1 incrementor named 'test'");
@@ -203,7 +218,6 @@
 		});
 
 		test('if $.tMgmt has set a timeout $.tMgmt should clear it after the callback has run', function(assert){
-			if(window.TMtimerStorage !== undefined){window.TMtimerStorage = undefined}
 			var tm = $.tMgmt(validOptions);
 			assert.equal(tm.options.timeout, true, "$.tMgmt has been set with a timeout");
 			window.setTimeout(function() {
@@ -211,31 +225,24 @@
 			}, 1100);
 		});	
 
-		// test('if optional incrementBy property is set w/interval to true, interval should run that many times', function(assert){
-		// 	// if(window.TMtimerStorage !== undefined){window.TMtimerStorage = undefined}
-		// 	// if(window.MGMTinc !== undefined){window.MGMTinc = undefined}
-		// 	var tm = $.tMgmt(validOptionsInc);
-		// 	console.log(window.MGMTinc);
-		// 	console.log(window.MGMTinc[0]);
-		// 	console.log(window.MGMTinc[0].test);
-		// 	var done1 = assert.async();
-		// 	var done2 = assert.async();
-		// 	var inc = 2;
-		// 	var intHandle = window.setInterval(function(){
-		// 		if(inc == 1){
-		// 			assert.equal(window.MGMTinc[0].test, 1, 'the test incrementor should be down to one');
-		// 			console.log('value of window.MGMTinc[0].test '+window.MGMTinc[0].test);
-		// 			console.log('length of window.MGMTinc '+window.MGMTinc.length);
-		// 			done1();	
-		// 		}
-		// 		if(inc == 0){
-		// 			assert.equal(window.MGMTinc.length, 0, 'the test incrementor should be removed');
-		// 			done2();
-		// 			clearInterval(intHandle);
-		// 		}
-		// 		inc--;
-		// 	}, 1000);
-		// });
+		test('if optional incrementBy property is set w/interval to true, interval should run that many times', function(assert){
+			var tm = $.tMgmt(validOptionsInc);
+			var done1 = assert.async();
+			var done2 = assert.async();
+			var inc = 2;
+			var intHandle = window.setInterval(function(){
+				if(inc == 1){
+					assert.equal(window.MGMTinc[0].test, 1, 'the test incrementor should be down to one');
+					done1();	
+				}
+				if(inc == 0){
+					assert.equal(window.MGMTinc.length, 0, 'the test incrementor should be removed');
+					done2();
+					clearInterval(intHandle);
+				}
+				inc--;
+			}, 1000);
+		});
 	});
   
-}(jQuery));
+}(jQuery, tMgmt));

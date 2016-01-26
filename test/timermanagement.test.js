@@ -7,10 +7,11 @@
  */
 (function ($) {
 
-    $.tMgmt = function (options) { //, settings) {
+   // $.tMgmt = function (options) { //, settings) {
+    tMgmt = function (options) { //, settings) {
 
         // Default options.
-        $.tMgmt.options = {
+        tMgmt.options = {
         };
 
 
@@ -59,17 +60,17 @@
                 
                 // prep timer storage litteral
                 var timer = {};
-                timer[$.tMgmt.options.name] = null;
+                timer[tMgmt.options.name] = null;
                 
                 // clear any pre-existing timers with this name
-                this.clearFromWindow($.tMgmt.options.name);
+                this.clearFromWindow(tMgmt.options.name);
                 
                 // push onto window
                 window.TMtimerStorage.push(timer);
                 
                 // declare incremetor for possible use w/this timer
                 var newInc = {};
-                newInc[$.tMgmt.options.name] = $.tMgmt.options.incrementBy || null;
+                newInc[tMgmt.options.name] = tMgmt.options.incrementBy || null;
                 window.MGMTinc.push(newInc);
 
                 // kick off the timer
@@ -84,44 +85,44 @@
                 var _self = this;
 
                 // prep action flag to determine if a timeout or an inrterval is being set
-                var action = ($.tMgmt.options.interval === true) ? 'setInterval': 'setTimeout';
+                var action = (tMgmt.options.interval === true) ? 'setInterval': 'setTimeout';
 
                 // store index this timer (and it's incrementor) will sit at in their matching arrays
                 var index = window.TMtimerStorage.length - 1;
 
                 // set up timer w/handle
-                window.TMtimerStorage[index][$.tMgmt.options.name] = window[action](function(){
+                window.TMtimerStorage[index][tMgmt.options.name] = window[action](function(){
                     
                     // run callback
-                    $.tMgmt.options.callback();
+                    tMgmt.options.callback();
                     
                     // if this timer is a timeout clear it & remove it
                     if(action === 'setTimeout'){
                         
                         // clear & remove
-                        _self.clearFromWindow($.tMgmt.options.name);
+                        _self.clearFromWindow(tMgmt.options.name);
                         
                     }
 
                     // if this timer is an interval it should be incremented
-                    if(action === 'setInterval' && window.MGMTinc[index][$.tMgmt.options.name] !== null){
+                    if(action === 'setInterval' && window.MGMTinc[index][tMgmt.options.name] !== null){
 
                         // de-increment the incrementor if it is greater than 1
-                        if(window.MGMTinc[index][$.tMgmt.options.name] > 1){
+                        if(window.MGMTinc[index][tMgmt.options.name] > 1){
 
                             // de-increment
-                            window.MGMTinc[index][$.tMgmt.options.name] -= 1;
+                            window.MGMTinc[index][tMgmt.options.name] -= 1;
 
                         }else{
 
                             // remove it at one
-                            _self.clearFromWindow($.tMgmt.options.name);   
+                            _self.clearFromWindow(tMgmt.options.name);   
 
                         }
 
                     }
                     
-                }, $.tMgmt.options.duration);
+                }, tMgmt.options.duration);
             },
 
             // clear the timer using a parameter to look for it's name
@@ -234,10 +235,10 @@
             // run immediately after THIS BLOCK...
 
             // Override default options with passed-in options.
-            $.tMgmt.options = $.extend({}, $.tMgmt.options, options);
+            tMgmt.options = $.extend({}, tMgmt.options, options);
 
             // see if there was enough settings data passed in to use the plugin
-            if(privateMethods.checkOptions($.tMgmt.options)){
+            if(privateMethods.checkOptions(tMgmt.options)){
                 
                 // continue processing... make sure window is ready to store our custom timer handles
                 privateMethods.prepStorage();
@@ -249,7 +250,7 @@
                 
                 // reset $.tMgmt.options to default and send an error message to the console
                 console.error('timeRmanagement setup error: Please include with your option object the following properties: name [string], duration [number], timeout OR interval [boolean] and callback [function].');
-                $.tMgmt.options = {};
+                tMgmt.options = {};
             }
             
         }else{
@@ -266,7 +267,7 @@
         }
 
         return {
-            options: $.tMgmt.options,
+            options: tMgmt.options,
             clear: clear,
             clearAll: clearAll
         }
