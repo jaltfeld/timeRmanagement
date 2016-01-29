@@ -37,7 +37,7 @@
 
             // prep for timer storage in window
             prepStorage: function(){
-                
+                console.log('prepping storage');
                 // check for timerStorage in data on window object
                 if(!window.TMtimerStorage){
                     
@@ -54,7 +54,7 @@
             // create the timer functionlity, register it to the window object
             // & add window object cleanup to callback functionality
             registerTimer: function(){
-
+                console.log('registering timer');
                 // store context
                 var _self = this;
                 
@@ -92,7 +92,7 @@
 
                 // set up timer w/handle
                 window.TMtimerStorage[index][tMgmt.options.name] = window[action](function(){
-                    
+                    console.log('triggering callback');
                     // run callback
                     tMgmt.options.callback();
                     
@@ -103,10 +103,10 @@
                         _self.clearFromWindow(tMgmt.options.name);
                         
                     }
-
+                    console.log('interval incrementor "'+tMgmt.options.name+'" = '+window.MGMTinc[index][tMgmt.options.name])
                     // if this timer is an interval it should be incremented
                     if(action === 'setInterval' && window.MGMTinc[index][tMgmt.options.name] !== null){
-
+                        console.log('found incrementor');
                         // de-increment the incrementor if it is greater than 1
                         if(window.MGMTinc[index][tMgmt.options.name] > 1){
 
@@ -180,7 +180,7 @@
 
             // remove specific array member holding a timer from window storage
             removeIncrementor: function(inc){
-
+                console.log('removing incrementor');
                 // create a place to capture timer handles to keep
                 var captureArr = [];
 
@@ -205,6 +205,7 @@
 
             // check if callback is being triggered - and if so trigger it...
             if(triggerCallback){
+                console.log('force triggering callback');
                 tMgmt.options.callback();
             }
             
