@@ -192,6 +192,7 @@
 			delete $.tMgmt;
 			delete $.TMtimerStorage;
 			delete $.MGMTinc;
+			delete window.calltest;
 		});
 
 		var validOptionsInc = {
@@ -201,6 +202,24 @@
 	    	incrementBy: 3,
 	    	callback: function(){
 	    		// console.log('hello');
+	    	}
+		}
+
+		var validOptionsCallback = {
+			name: 'test',
+	    	duration: 1000,
+	    	timeout: true,
+	    	callback: function(){
+	    		window.calltest = true;
+	    	}
+		}
+
+		var validOptionsTimeoutClearEarly = {
+			name: 'test',
+	    	duration: 3000,
+	    	timeout: true,
+	    	callback: function(){
+	    		window.calltest = true;
 	    	}
 		}
 
@@ -217,6 +236,21 @@
 			}, 100);
 		});
 
+		test('setting a timeout with a callback should cause the callback to trigger when it ends', function(assert){
+			window.calltest = null;
+			var tm = $.tMgmt(validOptionsCallback);
+			var done1 = assert.async();
+			var done2 = assert.async();
+			setTimeout(function(){
+				assert.equal(window.calltest, null, 'timeout not done, callback has not fired');
+				done1();
+			}, 950);
+			setTimeout(function(){
+				assert.equal(window.calltest, true, 'timeout done, callback has fired');
+				done2();
+			}, 1050);
+		});
+
 		test('if $.tMgmt has set a timeout $.tMgmt should clear it after the callback has run', function(assert){
 			var tm = $.tMgmt(validOptions);
 			assert.equal(tm.options.timeout, true, "$.tMgmt has been set with a timeout");
@@ -224,6 +258,39 @@
 				assert.equal(window.TMtimerStorage.length, 0, "the timeout should be removed from the TMtimerStorage array");
 			}, 1100);
 		});	
+
+		test('if a timeout is set, it should be possible to manually clear & remove it before it finishes', function(assert){
+			window.calltest = null;
+			var tm = $.tMgmt(validOptionsTimeoutClearEarly);
+			var done1 = assert.async();
+			var done2 = assert.async();
+			setTimeout(function(){
+				tm.clear('test');
+				assert.equal(window.calltest, null, 'timeout cleared before callback could be fired');
+				done1();
+			}, 1000);
+			setTimeout(function(){
+				assert.equal(window.TMtimerStorage.length, 0, 'timer cleared and removed from storage');
+				assert.equal(window.MGMTinc.length, 0, 'incrementor cleared and removed from storage');
+				assert.equal(window.calltest, null, 'callback was negated');
+				done2();
+			}, 1050);
+		});
+
+		test('if a timeout is set, and manually cleared before completed - its should be possible to force the callback to fire early', function(assert){
+			window.calltest = null;
+			var tm = $.tMgmt(validOptionsTimeoutClearEarly);
+			var done = assert.async();
+			setTimeout(function(){
+				tm.clear('test', true);
+			}, 1000);
+			setTimeout(function(){
+				assert.equal(window.TMtimerStorage.length, 0, 'timer cleared and removed from storage');
+				assert.equal(window.MGMTinc.length, 0, 'incrementor cleared and removed from storage');
+				assert.equal(window.calltest, true, 'callback was forced');
+				done();
+			}, 1050);
+		});
 
 		test('if optional incrementBy property is set w/interval to true, interval should run that many times', function(assert){
 			var tm = $.tMgmt(validOptionsInc);

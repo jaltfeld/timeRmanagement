@@ -200,7 +200,12 @@
         };
 
         // generic "clear" method to be called by the user via the plugin
-        var clear = function(name){
+        var clear = function(name, triggerCallback){
+
+            // check if callback is being triggered - and if so trigger it...
+            if(triggerCallback){
+                $.tMgmt.options.callback();
+            }
             
             // pass to this.clearFromWindow
             privateMethods.clearFromWindow(name);
