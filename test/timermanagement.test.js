@@ -29,10 +29,34 @@
                 contProc = (options.duration && typeof options.duration === 'number') ? contProc: false;
                 contProc = (options.interval === true || options.timeout === true) ? contProc: false;
                 contProc = (options.interval === true && options.timeout === true) ? false: contProc;
-                contProc = (options.callback !== undefined && options.callback instanceof Object) ? contProc: false;
+                contProc = (options.callback !== undefined && typeof options.callback === 'function') ? contProc: false;
                 
                 return contProc;
                 
+            },
+
+            // process for tMgmt returned objects passed back into tMgmt
+            handleObs: function(arg2){
+
+                // chack that arg2 is a single tMgmt produced object
+                if(arg2 instanceof Object && arg2.options !== undefined && arg2.options.name !== undefined && typeof arg2.options.callback === 'function'){
+
+                    // check for 3rd argument - it will be the "force callback on clear" argument, if present
+                    if(tMgmt.arguments[2]){
+
+                        // call clear method with callback flag
+                        clear(arg2.options.name, tMgmt.arguments[2]);    
+
+                    }else{
+
+                        // call clear method w/o callback flag
+                        clear(arg2.options.name);    
+
+                    }
+                    
+
+                }
+
             },
 
             // prep for timer storage in window
@@ -259,8 +283,23 @@
             
         }else{
             
-            // handle call to method right now...
-            // check to see that method passed exists
+            // the only immediate tMgmt method call that can be invoked without a 
+            // parameter is "clearAll" so if it's not "clearAll" return the error
+            if(options === 'clearAll' && tMgmt.arguments.length < 2){
+
+                // call clearAll
+
+
+            }else if(options === 'clear' && tMgmt.arguments.length > 1){
+                
+                // process second parameter
+                privateMethods.handleObs(tMgmt.arguments[1]);
+
+            }else{
+
+                // return error
+
+            }
             
             /*
              *  also any other special cases, settings, flags

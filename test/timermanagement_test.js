@@ -409,5 +409,35 @@
 			}, 1000);
 		});
 	});
+
+	module('jQuery.tMgmt - timer object as argument', function(hook) {
+
+		hook.beforeEach(function(){
+			$.tMgmt = TM;
+		});
+
+		hook.afterEach(function(){
+			delete $.tMgmt;
+			delete $.TMtimerStorage;
+			delete $.MGMTinc;
+		});
+
+		var validOptionsIntervalNoInc = {
+			name: 'test',
+	    	duration: 500,
+	    	interval: true,
+	    	callback: function(){
+	    		// do something
+	    	}
+		}
+
+		test('$.tMgmt should be able to clear timer by passing timer ob into $.tMgmt call (1st arg) w/a string rerference to the "clear" method as a 2nd arg', function(assert){
+			var tm = $.tMgmt(validOptionsIntervalNoInc);
+			$.tMgmt('clear', tm);
+			assert.equal(window.TMtimerStorage.length, 0, "$.tMgmt should have cleared the timer");
+			assert.equal(window.MGMTinc.length, 0, "$.tMgmt should have cleared the incrementor");
+		});
+
+	});
   
 }(jQuery, tMgmt));
