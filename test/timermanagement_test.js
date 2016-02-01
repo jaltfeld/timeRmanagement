@@ -420,6 +420,8 @@
 			delete $.tMgmt;
 			delete $.TMtimerStorage;
 			delete $.MGMTinc;
+			delete window.calltest;
+			delete window.activeFlag;
 		});
 
 		var validOptionsIntervalNoInc = {
@@ -427,15 +429,35 @@
 	    	duration: 500,
 	    	interval: true,
 	    	callback: function(){
-	    		// do something
+	    		if(window.calltest !== undefined && window.calltest !== null){
+	    			window.calltest += 1;
+	    		}
 	    	}
 		}
 
 		test('$.tMgmt should be able to clear timer by passing timer ob into $.tMgmt call (1st arg) w/a string rerference to the "clear" method as a 2nd arg', function(assert){
 			var tm = $.tMgmt(validOptionsIntervalNoInc);
+			assert.equal(window.TMtimerStorage.length, 1, "$.tMgmt should have set the timer");
+			assert.equal(window.MGMTinc.length, 1, "$.tMgmt should have set the incrementor");
 			$.tMgmt('clear', tm);
 			assert.equal(window.TMtimerStorage.length, 0, "$.tMgmt should have cleared the timer");
 			assert.equal(window.MGMTinc.length, 0, "$.tMgmt should have cleared the incrementor");
+		});
+
+		test('$.tMgmt should be able to clear timer by passing timer ob into $.tMgmt call (1st arg) w/a string rerference to the "clear" method as a 2nd arg, and force trigger callback (again) by passing 3rd argument (true)', function(assert){
+			window.activeFlag = true;
+			var tm = $.tMgmt(validOptionsIntervalNoInc);
+			window.calltest = 0;
+			var done = assert.async();
+			setTimeout(function(){
+				assert.equal(window.TMtimerStorage.length, 1, "$.tMgmt should have set the timer");
+				assert.equal(window.MGMTinc.length, 1, "$.tMgmt should have set the incrementor");
+				$.tMgmt('clear', tm, true);
+				assert.equal(window.TMtimerStorage.length, 0, "$.tMgmt should have cleared the timer");
+				assert.equal(window.MGMTinc.length, 0, "$.tMgmt should have cleared the incrementor");
+				assert.equal(window.calltest, 3, "the callback ran twice and was forcecalled a third time");
+				done();
+			}, 1010);
 		});
 
 	});

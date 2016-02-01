@@ -14,6 +14,9 @@
         tMgmt.options = {
         };
 
+        // set a flag to denote when plugin has been passed one of it's return values
+        var workingReturn = null;
+
 
         // encapulate private methods so they arent readily available
         var privateMethods = {
@@ -225,10 +228,13 @@
 
         // generic "clear" method to be called by the user via the plugin
         var clear = function(name, triggerCallback){
-
+            if(window.activeFlag) console.log('calling clear: name = '+name+', trigger = '+triggerCallback);
             // check if callback is being triggered - and if so trigger it...
             if(triggerCallback){
-                tMgmt.options.callback();
+
+                // the callback to run will be determined by whether or not the plugin is "working return"
+                var callback = (workingReturn)? tMgmt.arguments[1].options.callback: options.callback;
+                callback();
             }
             
             // pass to this.clearFromWindow
@@ -284,7 +290,8 @@
         }else{
             
             // the only immediate tMgmt method call that can be invoked without a 
-            // parameter is "clearAll" so if it's not "clearAll" return the error
+            // parameter (2nd or more arg passed to $.tMgmt('methodCall', arg, arg); ) 
+            // is "clearAll" so if it's not "clearAll" return the error
             if(options === 'clearAll' && tMgmt.arguments.length < 2){
 
                 // call clearAll
@@ -292,6 +299,9 @@
 
             }else if(options === 'clear' && tMgmt.arguments.length > 1){
                 
+                // second argument is a $.tMgmt return value - set the flag
+                workingReturn = true;
+
                 // process second parameter
                 privateMethods.handleObs(tMgmt.arguments[1]);
 
