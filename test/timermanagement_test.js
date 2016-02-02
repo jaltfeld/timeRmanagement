@@ -435,6 +435,28 @@
 	    	}
 		}
 
+		var validOptionsIntervalNoInc2 = {
+			name: 'test2',
+	    	duration: 500,
+	    	interval: true,
+	    	callback: function(){
+	    		if(window.calltest !== undefined && window.calltest !== null){
+	    			window.calltest += 1;
+	    		}
+	    	}
+		}
+
+		var validOptionsIntervalNoInc3 = {
+			name: 'test3',
+	    	duration: 500,
+	    	interval: true,
+	    	callback: function(){
+	    		if(window.calltest !== undefined && window.calltest !== null){
+	    			window.calltest += 1;
+	    		}
+	    	}
+		}
+
 		test('$.tMgmt should be able to clear timer by passing timer ob into $.tMgmt call (1st arg) w/a string rerference to the "clear" method as a 2nd arg', function(assert){
 			var tm = $.tMgmt(validOptionsIntervalNoInc);
 			assert.equal(window.TMtimerStorage.length, 1, "$.tMgmt should have set the timer");
@@ -445,7 +467,7 @@
 		});
 
 		test('$.tMgmt should be able to clear timer by passing timer ob into $.tMgmt call (1st arg) w/a string rerference to the "clear" method as a 2nd arg, and force trigger callback (again) by passing 3rd argument (true)', function(assert){
-			window.activeFlag = true;
+			// window.activeFlag = true;
 			var tm = $.tMgmt(validOptionsIntervalNoInc);
 			window.calltest = 0;
 			var done = assert.async();
@@ -458,6 +480,20 @@
 				assert.equal(window.calltest, 3, "the callback ran twice and was forcecalled a third time");
 				done();
 			}, 1010);
+		});
+
+		test('$.tMgmt should be able to clear all timers set when fed an array of $.tMgmt timer objects', function(assert){
+			console.log('testing multiple timer clear - no callback forced');
+			var tm1 = $.tMgmt(validOptionsIntervalNoInc);
+			var tm2 = $.tMgmt(validOptionsIntervalNoInc2);
+			var tm3 = $.tMgmt(validOptionsIntervalNoInc3);
+			assert.equal(window.TMtimerStorage.length, 3, "$.tMgmt should have set a timer for each call");
+			assert.equal(window.MGMTinc.length, 3, "$.tMgmt should have set an incrementor for each call");
+			var timers = [tm1, tm2, tm3];
+			window.activeFlag = true;
+			$.tMgmt('clearAll', timers);
+			// assert.equal(window.TMtimerStorage.length, 0, "$.tMgmt should have cleared all the timers");
+			// assert.equal(window.MGMTinc.length, 0, "$.tMgmt should have cleared all the incrementors");
 		});
 
 	});

@@ -62,6 +62,32 @@
 
             },
 
+            handleClearAllObs: function(TMobs, trigger){
+                if(window.activeFlag) console.log('in handleClearAllObs method');
+                // test if arg2 is an object or an array
+                if($.isArray(TMobs)){
+                    if(window.activeFlag) console.log('isArray');
+                    // arg2 is an array - test if its an array of strings or tMgmt return objects
+                    if(typeof TMobs[0] === "string"){
+
+                        // arg2 is an array of strings
+                        // call method to handle array of string names OR handle HERE
+
+                    }else{
+                        if(window.activeFlag) console.log('array of objects');
+                        // arg2 is an array of tMgmt return objects
+                        // call method to handle objects OR handle HERE
+
+                    }
+                }else if(TMobs instanceof Object){
+                    if(window.activeFlag) console.log('is string litteral');
+                    // arg2 is an object litteral containing tMgmt return objects which 
+                    // some or all may trigger forced callbacks
+                    // definately call method to handle litteral - handle THERE!
+                }
+
+            },
+
             // prep for timer storage in window
             prepStorage: function(){
                 // check for timerStorage in data on window object
@@ -120,7 +146,7 @@
                 window.TMtimerStorage[index][tMgmt.options.name] = window[action](function(){
 
                     // run callback
-                    tMgmt.options.callback();
+                    options.callback();
                     
                     // if this timer is a timeout clear it & remove it
                     if(action === 'setTimeout'){
@@ -228,7 +254,7 @@
 
         // generic "clear" method to be called by the user via the plugin
         var clear = function(name, triggerCallback){
-            if(window.activeFlag) console.log('calling clear: name = '+name+', trigger = '+triggerCallback);
+
             // check if callback is being triggered - and if so trigger it...
             if(triggerCallback){
 
@@ -259,7 +285,7 @@
             }
 
         };
-
+        if(window.activeFlag) console.log('about to test options arg');
         // determine if option is an initializing object or a method call (string)
         if(options instanceof Object){
             // first run of plugin (which sets the options) should always enter into this block
@@ -267,7 +293,7 @@
             // individual methods this first block should never be entered again after first run...
             // So, the processing AFTER the else block is the processing which will run on first
             // run immediately after THIS BLOCK...
-
+            if(window.activeFlag) console.log('options is an ob');
             // Override default options with passed-in options.
             tMgmt.options = $.extend({}, tMgmt.options, options);
 
@@ -288,14 +314,13 @@
             }
             
         }else{
-            
-            // the only immediate tMgmt method call that can be invoked without a 
-            // parameter (2nd or more arg passed to $.tMgmt('methodCall', arg, arg); ) 
-            // is "clearAll" so if it's not "clearAll" return the error
-            if(options === 'clearAll' && tMgmt.arguments.length < 2){
-
-                // call clearAll
-
+            if(window.activeFlag) console.log('options is a string');
+            // "clearAll" method call will have either an array for it's 2nd arg or an object litteral
+            // - and possibly a 3rd arg of true if the callback force trigger should take place
+            if(options === 'clearAll' && tMgmt.arguments.length > 1){
+                if(window.activeFlag) console.log('calling handleClearAllObs method');
+                // handle tMgmt return object values passed in with "clearAll" call
+                privateMethods.handleClearAllObs(tMgmt.arguments[1], tMgmt.arguments[2]);
 
             }else if(options === 'clear' && tMgmt.arguments.length > 1){
                 
