@@ -67,18 +67,18 @@
                 // test if arg2 is an object or an array
                 if($.isArray(TMobs)){
                     if(window.activeFlag) console.log('isArray');
-                    // arg2 is an array - test if its an array of strings or tMgmt return objects
-                    if(typeof TMobs[0] === "string"){
+                    // loop through array
+                    for(var i=0; i<TMobs.length; i++){
 
-                        // arg2 is an array of strings
-                        // call method to handle array of string names OR handle HERE
+                        // set a reference to the current related timer's name
+                        // according to whether the current array member is an object or a string
+                        var timerName = (typeof TMobs[i] === "string")? TMobs[i]: TMobs[i].options.name;
 
-                    }else{
-                        if(window.activeFlag) console.log('array of objects');
-                        // arg2 is an array of tMgmt return objects
-                        // call method to handle objects OR handle HERE
+                        //  and clear each associated timer/incrementor
+                        clear(timerName);
 
                     }
+
                 }else if(TMobs instanceof Object){
                     if(window.activeFlag) console.log('is string litteral');
                     // arg2 is an object litteral containing tMgmt return objects which 
