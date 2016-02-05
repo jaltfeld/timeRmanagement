@@ -205,6 +205,14 @@
                         }
                         
                     }
+
+                    // check if it's the last itteration and no timer was found - or one or more was...
+                    // if(i === window.TMtimerStorage.length-1 && foundTimer === 0){
+
+                    //     // send a warning in the console so the operation doesnt fail completely silently
+                    //     console.warn('No timer found with the name - '+name);
+
+                    // }
                     
                 }
                 
