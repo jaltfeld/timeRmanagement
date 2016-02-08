@@ -63,10 +63,10 @@
             },
 
             handleClearAllObs: function(TMobs, trigger){
-                if(window.activeFlag) console.log('in handleClearAllObs method');
+
                 // test if arg2 is an object or an array
                 if($.isArray(TMobs)){
-                    if(window.activeFlag) console.log('isArray');
+
                     // loop through array
                     for(var i=0; i<TMobs.length; i++){
 
@@ -80,10 +80,26 @@
                     }
 
                 }else if(TMobs instanceof Object){
-                    if(window.activeFlag) console.log('is string litteral');
+
                     // arg2 is an object litteral containing tMgmt return objects which 
                     // some or all may trigger forced callbacks
                     // definately call method to handle litteral - handle THERE!
+                }else if(typeof TMobs === 'string'){
+
+                    // generic 'clearAll' call (arg2) has been passed - loop through the TMtimerStorage 
+                    // array & get the timer name property from each member and pass it to the 'clear' method
+
+                    // collect names - feeding the names straight to clear changes the array WHILE it's looping, not good...
+                    var names = [];
+                    for(var i=0; i<window.TMtimerStorage.length; i++){
+                        var keys = Object.keys(window.TMtimerStorage[i]);
+                        names.push(keys[0]);
+                    }
+
+                    // now loop through names array and feed names to clear method
+                    for(var i=0; i<names.length; i++){
+                        clear(names[i]);
+                    }
                 }
 
             },
@@ -182,6 +198,9 @@
                 
                 // store context
                 var _self = this;
+
+                // set foundTimer flag
+                // var foundTimer = 0;
                 
                 // loop through the window's storage array
                 for(var i=0; i<window.TMtimerStorage.length; i++){
@@ -191,6 +210,9 @@
                         
                         // compare key to name
                         if(key === name){
+
+                            // increment foundTimer
+                            // foundTimer++;
                             
                             // clear it
                             clearTimeout(window.TMtimerStorage[i][key]);
@@ -293,7 +315,7 @@
             }
 
         };
-        if(window.activeFlag) console.log('about to test options arg');
+
         // determine if option is an initializing object or a method call (string)
         if(options instanceof Object){
             // first run of plugin (which sets the options) should always enter into this block
@@ -301,7 +323,7 @@
             // individual methods this first block should never be entered again after first run...
             // So, the processing AFTER the else block is the processing which will run on first
             // run immediately after THIS BLOCK...
-            if(window.activeFlag) console.log('options is an ob');
+
             // Override default options with passed-in options.
             tMgmt.options = $.extend({}, tMgmt.options, options);
 
@@ -322,13 +344,22 @@
             }
             
         }else{
-            if(window.activeFlag) console.log('options is a string');
+
             // "clearAll" method call will have either an array for it's 2nd arg or an object litteral
             // - and possibly a 3rd arg of true if the callback force trigger should take place
-            if(options === 'clearAll' && tMgmt.arguments.length > 1){
-                if(window.activeFlag) console.log('calling handleClearAllObs method');
-                // handle tMgmt return object values passed in with "clearAll" call
-                privateMethods.handleClearAllObs(tMgmt.arguments[1], tMgmt.arguments[2]);
+            if(options === 'clearAll'){
+
+                // check for multiple arguments
+                if(tMgmt.arguments.length > 1){
+
+                    // handle tMgmt return object values passed in with "clearAll" call
+                    privateMethods.handleClearAllObs(tMgmt.arguments[1], tMgmt.arguments[2]);
+                }else if(tMgmt.arguments.length === 1){
+
+                    // 'clearAll' was the sole argument passed
+                    privateMethods.handleClearAllObs(tMgmt.arguments[0]);
+
+                }
 
             }else if(options === 'clear' && tMgmt.arguments.length > 1){
                 

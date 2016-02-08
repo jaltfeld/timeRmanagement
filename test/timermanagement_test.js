@@ -506,14 +506,14 @@
 		});
 
 		test('$.tMgmt should be able to clear all timers set when fed an array of $.tMgmt timer objects', function(assert){
-			console.log('testing multiple timer clear - no callback forced');
+			// console.log('testing multiple timer clear - no callback forced');
 			var tm1 = $.tMgmt(validOptionsIntervalNoInc);
 			var tm2 = $.tMgmt(validOptionsIntervalNoInc2);
 			var tm3 = $.tMgmt(validOptionsIntervalNoInc3);
 			assert.equal(window.TMtimerStorage.length, 3, "$.tMgmt should have set a timer for each call");
 			assert.equal(window.MGMTinc.length, 3, "$.tMgmt should have set an incrementor for each call");
 			var timers = [tm1, tm2, tm3];
-			window.activeFlag = true;
+			// window.activeFlag = true;
 			$.tMgmt('clearAll', timers);
 			// assert.equal(window.TMtimerStorage.length, 0, "$.tMgmt should have cleared all the timers");
 			// assert.equal(window.MGMTinc.length, 0, "$.tMgmt should have cleared all the incrementors");
@@ -530,6 +530,18 @@
 			var timers = ["test", "test2", "test3"];
 			// console.log('13 - manually clearing');
 			$.tMgmt('clearAll', timers);
+			assert.equal(window.TMtimerStorage.length, 0, "$.tMgmt should have cleared all the timers");
+			assert.equal(window.MGMTinc.length, 0, "$.tMgmt should have cleared all the incrementors");
+		});
+
+		test('$.tMgmt should be able to clear ALL currently active timers when passed "clearAll" with no other parameters', function(assert){
+			// window.activeFlag = true;
+			var tm1 = $.tMgmt(validOptionsIntervalNoInc);
+			var tm2 = $.tMgmt(validOptionsIntervalNoInc2);
+			var tm3 = $.tMgmt(validOptionsIntervalNoInc3);
+			assert.equal(window.TMtimerStorage.length, 3, "$.tMgmt should have set a timer for each call");
+			assert.equal(window.MGMTinc.length, 3, "$.tMgmt should have set an incrementor for each call");
+			$.tMgmt('clearAll');
 			assert.equal(window.TMtimerStorage.length, 0, "$.tMgmt should have cleared all the timers");
 			assert.equal(window.MGMTinc.length, 0, "$.tMgmt should have cleared all the incrementors");
 		});
