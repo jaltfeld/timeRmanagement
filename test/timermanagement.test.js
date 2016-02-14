@@ -140,7 +140,7 @@
                 var newInc = {};
                 newInc[tMgmt.options.name] = tMgmt.options.incrementBy || null;
                 window.MGMTinc.push(newInc);
-
+                
                 // kick off the timer
                 _self.timerCreate();
 
@@ -163,10 +163,10 @@
 
                     // run callback
                     options.callback();
-                    
+
                     // if this timer is a timeout clear it & remove it
                     if(action === 'setTimeout'){
-                        
+
                         // clear & remove
                         _self.clearFromWindow(tMgmt.options.name);
                         
@@ -350,14 +350,29 @@
             if(options === 'clearAll'){
 
                 // check for multiple arguments
-                if(tMgmt.arguments.length > 1){
+                if(tMgmt.arguments.length > 1 && tMgmt.arguments[1] !== true){
 
                     // handle tMgmt return object values passed in with "clearAll" call
                     privateMethods.handleClearAllObs(tMgmt.arguments[1], tMgmt.arguments[2]);
-                }else if(tMgmt.arguments.length === 1){
+                }else{
 
-                    // 'clearAll' was the sole argument passed
-                    privateMethods.handleClearAllObs(tMgmt.arguments[0]);
+                    // looking for sole "clearAll" argument
+                    if(tMgmt.arguments.length === 1){
+
+                        // 'clearAll' was the sole argument passed
+                        privateMethods.handleClearAllObs(tMgmt.arguments[0]);
+
+                    }else if(tMgmt.arguments[1] === true){
+
+                        // // set a flag so tMgmt knows to fish out the stored callback
+                        // workingGenericClearAll = true;
+
+                        // // 'clearAll' passed w/2nd arg of true - indicating trigger callback 
+                        // // for each timer being desttroyed
+                        // privateMethods.handleClearAllObs(tMgmt.arguments[0], tMgmt.arguments[1]);
+
+                    }
+
 
                 }
 
