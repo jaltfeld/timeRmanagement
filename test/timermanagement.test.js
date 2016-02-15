@@ -39,21 +39,21 @@
             },
 
             // process for tMgmt returned objects passed back into tMgmt
-            handleObs: function(arg2){
+            handleObs: function(obPassed){
 
                 // chack that arg2 is a single tMgmt produced object
-                if(arg2 instanceof Object && arg2.options !== undefined && arg2.options.name !== undefined && typeof arg2.options.callback === 'function'){
+                if(obPassed instanceof Object && obPassed.options !== undefined && obPassed.options.name !== undefined && typeof obPassed.options.callback === 'function'){
 
                     // check for 3rd argument - it will be the "force callback on clear" argument, if present
                     if(tMgmt.arguments[2]){
 
                         // call clear method with callback flag
-                        clear(arg2.options.name, tMgmt.arguments[2]);    
+                        clear(obPassed.options.name, tMgmt.arguments[2]);    
 
                     }else{
 
                         // call clear method w/o callback flag
-                        clear(arg2.options.name);    
+                        clear(obPassed.options.name);    
 
                     }
                     
@@ -140,7 +140,7 @@
                 var newInc = {};
                 newInc[tMgmt.options.name] = tMgmt.options.incrementBy || null;
                 window.MGMTinc.push(newInc);
-                
+
                 // kick off the timer
                 _self.timerCreate();
 
@@ -171,7 +171,7 @@
                         _self.clearFromWindow(tMgmt.options.name);
                         
                     }
-
+                    
                     // if this timer is an interval it should be incremented
                     if(action === 'setInterval' && window.MGMTinc[index][tMgmt.options.name] !== null){
 
@@ -195,7 +195,7 @@
 
             // clear the timer using a parameter to look for it's name
             clearFromWindow: function(name){
-                
+
                 // store context
                 var _self = this;
 
@@ -213,7 +213,7 @@
 
                             // increment foundTimer
                             // foundTimer++;
-                            
+
                             // clear it
                             clearTimeout(window.TMtimerStorage[i][key]);
                             clearInterval(window.TMtimerStorage[i][key]);
@@ -277,7 +277,7 @@
 
                 // reset window.TMtimerStorage to the value of captureArr
                 window.MGMTinc = captureArr;
-                
+
             }
 
         };
@@ -292,7 +292,7 @@
                 var callback = (workingReturn)? tMgmt.arguments[1].options.callback: options.callback;
                 callback();
             }
-            
+
             // pass to this.clearFromWindow
             privateMethods.clearFromWindow(name);
 
