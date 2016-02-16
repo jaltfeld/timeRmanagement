@@ -14,8 +14,14 @@
         tMgmt.options = {
         };
 
-        // set a flag to denote when plugin has been passed one of it's return values
+        // debug
+        var internalInc = 0;
+
+        // prepare a flag to denote when plugin has been passed one of it's return values
         var workingReturn = null;
+
+        // prepare a flag to let tMgmt know that force callback triggers will look for callbacks in with named timers
+        var workingGenericClearAll = null;
 
 
         // encapulate private methods so they arent readily available
@@ -86,10 +92,10 @@
                     // definately call method to handle litteral - handle THERE!
                 }else if(typeof TMobs === 'string'){
 
-                    // generic 'clearAll' call (arg2) has been passed - loop through the TMtimerStorage 
-                    // array & get the timer name property from each member and pass it to the 'clear' method
+                    // generic 'clearAll' call has been passed - loop through the TMtimerStorage 
+                    // array & cache the timer names from each member then pass them to the 'clear' method...
 
-                    // collect names - feeding the names straight to clear changes the array WHILE it's looping, not good...
+                    // collect names - feeding the names straight to "clear" changes the array WHILE it's looping, not good for processing...
                     var names = [];
                     for(var i=0; i<window.TMtimerStorage.length; i++){
                         var keys = Object.keys(window.TMtimerStorage[i]);
@@ -98,7 +104,15 @@
 
                     // now loop through names array and feed names to clear method
                     for(var i=0; i<names.length; i++){
-                        clear(names[i]);
+
+                        // check for trigger passed as true 
+                        // (each timer destroyed should force trigger it's callback)
+                        if(trigger){
+                            clear(names[i], trigger);
+                        }else{
+                            clear(names[i]);
+                        }
+                        
                     }
                 }
 
@@ -106,6 +120,7 @@
 
             // prep for timer storage in window
             prepStorage: function(){
+
                 // check for timerStorage in data on window object
                 if(!window.TMtimerStorage){
                     
@@ -131,7 +146,7 @@
                 timer[tMgmt.options.name] = null;
                 
                 // clear any pre-existing timers with this name
-                this.clearFromWindow(tMgmt.options.name);
+                if(window.TMtimerStorage) this.clearFromWindow(tMgmt.options.name, true);
                 
                 // push onto window
                 window.TMtimerStorage.push(timer);
@@ -158,20 +173,24 @@
                 // store index this timer (and it's incrementor) will sit at in their matching arrays
                 var index = window.TMtimerStorage.length - 1;
 
+                // store callback with timer so a reference exists that can be force triggered 
+                // if needed, w/o an actual $.tMgmt return object
+                window.TMtimerStorage[index].callback = options.callback;
+
                 // set up timer w/handle
                 window.TMtimerStorage[index][tMgmt.options.name] = window[action](function(){
-
+                    
                     // run callback
                     options.callback();
-
+                    
                     // if this timer is a timeout clear it & remove it
                     if(action === 'setTimeout'){
-
+                        
                         // clear & remove
-                        _self.clearFromWindow(tMgmt.options.name);
+                        _self.clearFromWindow(tMgmt.options.name, true);
                         
                     }
-                    
+
                     // if this timer is an interval it should be incremented
                     if(action === 'setInterval' && window.MGMTinc[index][tMgmt.options.name] !== null){
 
@@ -184,99 +203,101 @@
                         }else{
 
                             // remove it at one
-                            _self.clearFromWindow(tMgmt.options.name);   
+                            _self.clearFromWindow(tMgmt.options.name, true);   
 
                         }
 
                     }
                     
                 }, tMgmt.options.duration);
+
             },
 
-            // clear the timer using a parameter to look for it's name
-            clearFromWindow: function(name){
+            // zero in on an index of the TMtimerStorage array 
+            // that holds an object with a key matching a provided name
+            getKeyFromName: function(name){
 
-                // store context
-                var _self = this;
-
-                // set foundTimer flag
-                // var foundTimer = 0;
-                
                 // loop through the window's storage array
                 for(var i=0; i<window.TMtimerStorage.length; i++){
-                    
+
                     // get the key of the current litteral
                     for(key in window.TMtimerStorage[i]){
                         
                         // compare key to name
                         if(key === name){
 
-                            // increment foundTimer
-                            // foundTimer++;
+                            // send back the index
+                            return i;
 
-                            // clear it
-                            clearTimeout(window.TMtimerStorage[i][key]);
-                            clearInterval(window.TMtimerStorage[i][key]);
-                            
-                            // remove it from window storage
-                            _self.removeTimer(i);
-                            
-                            // also destroy the associated incrementor
-                            _self.removeIncrementor(i);
-                            
                         }
-                        
+
                     }
 
-                    // check if it's the last itteration and no timer was found - or one or more was...
-                    // if(i === window.TMtimerStorage.length-1 && foundTimer === 0){
-
-                    //     // send a warning in the console so the operation doesnt fail completely silently
-                    //     console.warn('No timer found with the name - '+name);
-
-                    // }
-                    
                 }
+
+                // if no match for the name is found send back false
+                return false;
+            },
+
+            // clear the timer using a parameter to look for it's name
+            clearFromWindow: function(name){
+
+                // apply default value to local
+                local = (typeof local === 'undefined')? false: local;
+
+                // if call is local and there is no TMtimerStorage OR it's empty exit processing
+                if(local && typeof window.TMtimerStorage === 'undefined'){
+                    return false;
+                }
+
+                // store context
+                var _self = this;
+
+                // see if there's a matching index in the TMtimerStorage array for the name passed
+                var nameIndex = this.getKeyFromName(name);
+
+                if(nameIndex === 0 || nameIndex > 0){
+
+                    // clear it
+                    clearTimeout(window.TMtimerStorage[nameIndex][name]);
+                    clearInterval(window.TMtimerStorage[nameIndex][name]);
+
+                    // remove it from window storage
+                    _self.removeTimerIncrementor(nameIndex, 'TMtimerStorage');
+
+                    // also destroy the associated incrementor
+                    _self.removeTimerIncrementor(nameIndex, 'MGMTinc');
+
+                }
+
+                // // check nameIndex AND that it's not a local call
+                // if(!nameIndex && !local){
+
+                //     // send a warning in the console so the operation doesnt fail completely silently
+                //     console.warn('No timer found with the name - '+name);
+
+                // }
                 
             },
 
-            // remove specific array member holding a timer from window storage
-            removeTimer: function(inc){
+            // remove specific array members holding timer & incrementor from window storage
+            removeTimerIncrementor: function(inc, type){
 
                 // create a place to capture timer handles to keep
                 var captureArr = [];
 
                 // loop through the TMtimerStorage array
-                for(var i=0; i<window.TMtimerStorage.length; i++){
+                for(var i=0; i<window[type].length; i++){
 
                     // store all members in the captureArr who's IDs dont match the inc parameter
                     if(i != inc){
-                        captureArr.push(window.TMtimerStorage[i]);
+                        captureArr.push(window[type][i]);
                     }
                 }
 
                 // reset window.TMtimerStorage to the value of captureArr
-                window.TMtimerStorage = captureArr;
+                window[type] = captureArr;
 
-            },
-
-            // remove specific array member holding a timer from window storage
-            removeIncrementor: function(inc){
-
-                // create a place to capture timer handles to keep
-                var captureArr = [];
-
-                // loop through the TMtimerStorage array
-                for(var i=0; i<window.MGMTinc.length; i++){
-
-                    // store all members in the captureArr who's IDs dont match the inc parameter
-                    if(i != inc){
-                        captureArr.push(window.MGMTinc[i]);
-                    }
-                }
-
-                // reset window.TMtimerStorage to the value of captureArr
-                window.MGMTinc = captureArr;
 
             }
 
@@ -285,11 +306,18 @@
         // generic "clear" method to be called by the user via the plugin
         var clear = function(name, triggerCallback){
 
-            // check if callback is being triggered - and if so trigger it...
+            // check if callback is being triggered - process for retrieval oc callback from API,
+            // or from tMgmt object passed back in, or from what was stored with the TMtimerStorage array
             if(triggerCallback){
 
                 // the callback to run will be determined by whether or not the plugin is "working return"
                 var callback = (workingReturn)? tMgmt.arguments[1].options.callback: options.callback;
+
+                // if workingGenericClearAll - callback will need changing
+                var indexNum = privateMethods.getKeyFromName(name);
+                callback = (workingGenericClearAll)? window.TMtimerStorage[indexNum].callback: callback;
+
+                // call it...
                 callback();
             }
 
@@ -364,12 +392,12 @@
 
                     }else if(tMgmt.arguments[1] === true){
 
-                        // // set a flag so tMgmt knows to fish out the stored callback
-                        // workingGenericClearAll = true;
+                        // set a flag so tMgmt knows to fish out the stored callback
+                        workingGenericClearAll = true;
 
-                        // // 'clearAll' passed w/2nd arg of true - indicating trigger callback 
-                        // // for each timer being desttroyed
-                        // privateMethods.handleClearAllObs(tMgmt.arguments[0], tMgmt.arguments[1]);
+                        // 'clearAll' passed w/2nd arg of true - indicating trigger callback 
+                        // for each timer being desttroyed
+                        privateMethods.handleClearAllObs(tMgmt.arguments[0], tMgmt.arguments[1]);
 
                     }
 
