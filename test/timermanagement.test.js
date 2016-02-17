@@ -73,23 +73,39 @@
                 // test if arg2 is an object or an array
                 if($.isArray(TMobs)){
 
-                    // loop through array
-                    for(var i=0; i<TMobs.length; i++){
+                    // check for an array of objects containing a "timer" key
+                    if(this.findTimerKey(TMobs)){
+                        
+                        // loop through the array and it's member objects
+                        for(var i=0; i<TMobs.length; i++){
 
-                        // set a reference to the current related timer's name
-                        // according to whether the current array member is an object or a string
-                        var timerName = (typeof TMobs[i] === "string")? TMobs[i]: TMobs[i].options.name;
+                            // get the name of the timer
+                            var Tname = TMobs[i].timer.options.name;
 
-                        //  and clear each associated timer/incrementor
-                        clear(timerName);
+                            // verify the presence of a force trigger flag
+                            var Ttrigger = (TMobs[i].trigger !== undefined && TMobs[i].trigger === true)? true: false;
+
+                            // clear timer
+                            clear(Tname, Ttrigger);
+
+                        }
+
+                    }else{
+
+                        // loop through array
+                        for(var i=0; i<TMobs.length; i++){
+
+                            // set a reference to the current related timer's name
+                            // according to whether the current array member is an object or a string
+                            var timerName = (typeof TMobs[i] === "string")? TMobs[i]: TMobs[i].options.name;
+
+                            //  and clear each associated timer/incrementor
+                            clear(timerName);
+
+                        }
 
                     }
 
-                }else if(TMobs instanceof Object){
-
-                    // arg2 is an object litteral containing tMgmt return objects which 
-                    // some or all may trigger forced callbacks
-                    // definately call method to handle litteral - handle THERE!
                 }else if(typeof TMobs === 'string'){
 
                     // generic 'clearAll' call has been passed - loop through the TMtimerStorage 
@@ -118,6 +134,34 @@
 
             },
 
+            // encapsulate the functionality of finding "timers" 
+            // key in array of objects passed into tMgmt w/"clearAll" call
+            findTimerKey: function(obArr){
+
+                // set return flag
+                var timerPresent = false;
+
+                // get first member of obArr array
+                var obOne = obArr[0];
+
+                // check that obArr is in fact an object
+                if(obOne instanceof Object){
+
+                    // loop through first ob
+                    for(var key in obOne){
+
+                        // examine key - is it "timers"?
+                        timerPresent = (key === "timer")? true: timerPresent;
+
+                    }
+
+                }
+
+                // return the value
+                return timerPresent;
+
+            },
+
             // prep for timer storage in window
             prepStorage: function(){
 
@@ -137,9 +181,6 @@
             // create the timer functionlity, register it to the window object
             // & add window object cleanup to callback functionality
             registerTimer: function(){
-
-                // store context
-                var _self = this;
                 
                 // prep timer storage litteral
                 var timer = {};
@@ -157,7 +198,7 @@
                 window.MGMTinc.push(newInc);
 
                 // kick off the timer
-                _self.timerCreate();
+                this.timerCreate();
 
             },
 
@@ -377,11 +418,15 @@
             // - and possibly a 3rd arg of true if the callback force trigger should take place
             if(options === 'clearAll'){
 
+                // set a flag so tMgmt knows to fish out the stored callback - if callback is included
+                workingGenericClearAll = true;
+
                 // check for multiple arguments
                 if(tMgmt.arguments.length > 1 && tMgmt.arguments[1] !== true){
 
-                    // handle tMgmt return object values passed in with "clearAll" call
-                    privateMethods.handleClearAllObs(tMgmt.arguments[1], tMgmt.arguments[2]);
+                    // handle "clearAll" call passed in with tMgmt return object values
+                    privateMethods.handleClearAllObs(tMgmt.arguments[1]);
+
                 }else{
 
                     // looking for sole "clearAll" argument
@@ -391,9 +436,6 @@
                         privateMethods.handleClearAllObs(tMgmt.arguments[0]);
 
                     }else if(tMgmt.arguments[1] === true){
-
-                        // set a flag so tMgmt knows to fish out the stored callback
-                        workingGenericClearAll = true;
 
                         // 'clearAll' passed w/2nd arg of true - indicating trigger callback 
                         // for each timer being desttroyed

@@ -29,7 +29,7 @@
 		});
 
 		hook.afterEach(function(){
-			delete $.tMgmt;
+			$.tMgmt = null;
 		});
 
 		test('$.tMgmt exists', function(assert){
@@ -48,8 +48,6 @@
 	module('jQuery.tMgmt - setup', function(hook) {
 
 		hook.beforeEach(function(){
-			delete window.TMtimerStorage;
-			delete window.MGMTinc;
 			$.tMgmt = TM;
 
 			validOptions = {
@@ -64,10 +62,10 @@
 		});
 
 		hook.afterEach(function(){
-			delete $.tMgmt;
-			window.TMtimerStorage = [];
-			window.MGMTinc = [];
-			delete window.activeFlag;
+			$.tMgmt = null;
+			window.TMtimerStorage = null;
+			window.MGMTinc = null;
+			window.activeFlag = null;
 			validOptions = {};
 		});
 
@@ -201,8 +199,6 @@
 	module('jQuery.tMgmt - usage', function(hook) {
 
 		hook.beforeEach(function(){
-			delete window.TMtimerStorage;
-			delete window.MGMTinc;
 			$.tMgmt = TM;
 
 			validOptions = {
@@ -266,11 +262,11 @@
 		});
 
 		hook.afterEach(function(){
-			delete $.tMgmt;
-			window.TMtimerStorage = [];
-			window.MGMTinc = [];
-			delete window.calltest;
-			delete window.activeFlag;
+			$.tMgmt = null;
+			window.TMtimerStorage = null;
+			window.MGMTinc = null;
+			window.calltest = null;
+			window.activeFlag = null;
 			validOptionsInc = {};
 			validOptionsIncCancelEarly = {};
 			validOptionsIntervalNoInc = {};
@@ -472,8 +468,6 @@
 	module('jQuery.tMgmt - timer object as argument', function(hook) {
 
 		hook.beforeEach(function(){
-			delete window.TMtimerStorage;
-			delete window.MGMTinc;
 			$.tMgmt = TM;
 
 			validOptionsIntervalNoInc = {
@@ -510,23 +504,60 @@
 		    		}
 		    	}
 			}
+
+			validOptionsTimeoutNoInc = {
+				name: 'testValidTNoInc',
+		    	duration: 800,
+		    	timeout: true,
+		    	callback: function(){
+		    		if(window.calltest !== undefined && window.calltest !== null){
+		    			if(window.activeFlag) console.log('window.calltest: '+(window.calltest+1));
+		    			window.calltest += 1;
+		    		}
+		    	}
+			}
+
+			validOptionsTimeoutNoInc2 = {
+				name: 'testValidTNoInc2',
+		    	duration: 800,
+		    	timeout: true,
+		    	callback: function(){
+		    		if(window.calltest !== undefined && window.calltest !== null){
+		    			window.calltest += 1;
+		    		}
+		    	}
+			}
+
+			validOptionsTimeoutNoInc3 = {
+				name: 'testValidTNoInc3',
+		    	duration: 800,
+		    	timeout: true,
+		    	callback: function(){
+		    		if(window.calltest !== undefined && window.calltest !== null){
+		    			window.calltest += 1;
+		    		}
+		    	}
+			}
 		});
 
 		hook.afterEach(function(){
-			delete $.tMgmt;
-			window.TMtimerStorage = [];
-			window.MGMTinc = [];
-			delete window.calltest;
-			delete window.activeFlag;
+			$.tMgmt = null;
+			window.TMtimerStorage = null;
+			window.MGMTinc = null;
+			window.calltest = null;
+			window.activeFlag = null;
 
 			validOptionsIntervalNoInc = {};
 			validOptionsIntervalNoInc2 = {};
 			validOptionsIntervalNoInc3 = {};
+			validOptionsTimeoutNoInc = {};
+			validOptionsTimeoutNoInc2 = {};
+			validOptionsTimeoutNoInc3 = {};
 
-			delete tm1;
-			delete tm2;
-			delete tm3;
-			delete timers;
+			tm1 = null;
+			tm2 = null;
+			tm3 = null;
+			timers = null;
 		});
 
 		test('$.tMgmt should be able to clear timer by passing timer ob into $.tMgmt call (1st arg) w/a string rerference to the "clear" method as a 2nd arg', function(assert){
@@ -606,10 +637,41 @@
 			assert.equal(window.TMtimerStorage.length, 3, "$.tMgmt should have set a timer for each call");
 			assert.equal(window.MGMTinc.length, 3, "$.tMgmt should have set an incrementor for each call");
 			$.tMgmt('clearAll', true);
-			// $.tMgmt('clearAll');
 			assert.equal(window.TMtimerStorage.length, 0, "$.tMgmt should have cleared all the timers");
 			assert.equal(window.MGMTinc.length, 0, "$.tMgmt should have cleared all the incrementors");
 			assert.equal(window.calltest, 3, "3 callbacks should all have fired once");
+		});
+
+		test('$.tMgmt should be able to accept an object of timers and clear them', function(assert){
+			validOptionsTimeoutNoInc.duration = 10000;
+			validOptionsTimeoutNoInc2.duration = 10000;
+			validOptionsTimeoutNoInc3.duration = 10000;
+			var tm1 = $.tMgmt(validOptionsTimeoutNoInc);
+			var tm2 = $.tMgmt(validOptionsTimeoutNoInc2);
+			var tm3 = $.tMgmt(validOptionsTimeoutNoInc3);
+			assert.equal(window.TMtimerStorage.length, 3, "$.tMgmt should have set a timer for each call");
+			assert.equal(window.MGMTinc.length, 3, "$.tMgmt should have set an incrementor for each call");
+			var timers = [{timer:tm1},{timer:tm2},{timer:tm3}];
+			$.tMgmt('clearAll', timers);
+			assert.equal(window.TMtimerStorage.length, 0, "$.tMgmt should have cleared all the timers");
+			assert.equal(window.MGMTinc.length, 0, "$.tMgmt should have cleared all the incrementors");
+		});
+
+		test('$.tMgmt should be able to accept an object of timers and clear them, and force trigger callbacks for each timer object with at trigger key & a value of true', function(assert){
+			validOptionsTimeoutNoInc.duration = 10000;
+			validOptionsTimeoutNoInc2.duration = 10000;
+			validOptionsTimeoutNoInc3.duration = 10000;
+			window.calltest = 0;
+			var tm1 = $.tMgmt(validOptionsTimeoutNoInc);
+			var tm2 = $.tMgmt(validOptionsTimeoutNoInc2);
+			var tm3 = $.tMgmt(validOptionsTimeoutNoInc3);
+			assert.equal(window.TMtimerStorage.length, 3, "$.tMgmt should have set a timer for each call");
+			assert.equal(window.MGMTinc.length, 3, "$.tMgmt should have set an incrementor for each call");
+			var timers = [{timer:tm1, trigger:true},{timer:tm2},{timer:tm3, trigger:true}];
+			$.tMgmt('clearAll', timers);
+			assert.equal(window.TMtimerStorage.length, 0, "$.tMgmt should have cleared all the timers");
+			assert.equal(window.MGMTinc.length, 0, "$.tMgmt should have cleared all the incrementors");
+			assert.equal(window.calltest, 2, "2 callbacks should all have fired once");
 		});
 
 	});
