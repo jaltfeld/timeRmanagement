@@ -51,7 +51,7 @@
 			$.tMgmt = TM;
 
 			validOptions = {
-				name: 'test',
+				name: 'tValOps',
 		    	duration: 1000,
 		    	timeout: true,
 		    	callback: function(){
@@ -71,12 +71,12 @@
 
 		test('$.tMgmt accepts options', function(assert){
 			var tm = $.tMgmt(validOptions);
-			assert.equal(tm.options.name, "test", "$.tMgmt.options.name should be set");
+			assert.equal(tm.options.name, "tValOps", "$.tMgmt.options.name should be set");
 		});
 
 		test('$.tMgmt should run checkOptions check function when first instantiated', function(assert){
 			var tm = $.tMgmt(validOptions);
-			assert.equal(tm.options.name, "test", "$.tMgmt.options.name should be set");
+			assert.equal(tm.options.name, "tValOps", "$.tMgmt.options.name should be set");
 			assert.notEqual(tm.options, {}, "the checkOptions function should pass and not return an empty options litteral");
 		});
 
@@ -101,7 +101,7 @@
 
 		test('checkOptions() method ends processing/sets $.tMgmt.options to {} when options are not properly', function(assert){
 			var tm3 = $.tMgmt({
-				name: 'test',
+				name: 'test1',
 	        	timeout: true,
 	        	callback: function(){console.log('callback')}
 			});
@@ -110,7 +110,7 @@
 
 		test('checkOptions() method ends processing/sets $.tMgmt.options to {} when options are not properly', function(assert){
 			var tm4 = $.tMgmt({
-				name: 'test',
+				name: 'test2',
 	        	duration: '1000',
 	        	timeout: true,
 	        	callback: function(){console.log('callback')}
@@ -120,7 +120,7 @@
 
 		test('checkOptions() method ends processing/sets $.tMgmt.options to {} when options are not properly', function(assert){
 			var tm5 = $.tMgmt({
-				name: 'test',
+				name: 'test3',
 				duration: 1000,
 	        	callback: function(){console.log('callback')}
 			});
@@ -129,7 +129,7 @@
 
 		test('checkOptions() method ends processing/sets $.tMgmt.options to {} when options are not properly', function(assert){
 			var tm6 = $.tMgmt({
-				name: 'test',
+				name: 'test4',
 	        	duration: 1000,
 	        	interval: true,
 	        	timeout: true,
@@ -140,7 +140,7 @@
 
 		test('checkOptions() method ends processing/sets $.tMgmt.options to {} when options are not properly', function(assert){
 			var tm7 = $.tMgmt({
-				name: 'test',
+				name: 'test5',
 	        	duration: 1000,
 	        	interval: false,
 	        	timeout: false,
@@ -151,7 +151,7 @@
 
 		test('checkOptions() method ends processing/sets $.tMgmt.options to {} when options are not properly', function(assert){
 			var tm8 = $.tMgmt({
-				name: 'test',
+				name: 'test6',
 	        	timeout: true
 			});
 			assert.deepEqual(tm8.options, {}, "$.tMgmt.options is {} - callback missing");
@@ -159,7 +159,7 @@
 		
 		test('checkOptions() method ends processing/sets $.tMgmt.options to {} when options are not properly', function(assert){
 			var tm9 = $.tMgmt({
-				name: 'test',
+				name: 'test7',
 	        	duration: '1000',
 	        	timeout: true,
 	        	callback: 'new Object'
@@ -202,7 +202,7 @@
 			$.tMgmt = TM;
 
 			validOptions = {
-				name: 'test',
+				name: 'testValOps',
 		    	duration: 1000,
 		    	timeout: true,
 		    	callback: function(){
@@ -302,7 +302,7 @@
 			var done1 = assert.async();
 			var done2 = assert.async();
 			setTimeout(function(){
-				tm.clear('test');
+				tm.clear('testClearEarly');
 				assert.equal(window.calltest, null, 'timeout cleared before callback could be fired');
 				done1();
 			}, 1000);
@@ -346,28 +346,26 @@
 			}, 1050);
 		});
 
-	// 	// test('if a timer is set, and cleared by the wrong name it should not clear the timer', function(assert){
-	// 	// 	window.calltest = 0;
-	// 	// 	// window.activeFlag = true;
-	// 	// 	console.log('clearing "wrongName", then "test"');
-	// 	// 	var tm = $.tMgmt(validOptionsIntervalNoInc);
-	// 	// 	var done1 = assert.async();
-	// 	// 	var done2 = assert.async();
-	// 	// 	setTimeout(function(){
-	// 	// 		tm.clear('wrongName');
-	// 	// 	}, 500);
-	// 	// 	setTimeout(function(){
-	// 	// 		tm.clear('test');
-	// 	// 		assert.equal(window.calltest, 1, 'wrongName did not clear timer before callback fired once');
-	// 	// 		done1();
-	// 	// 	}, 700);
-	// 	// 	setTimeout(function(){
-	// 	// 		assert.equal(window.TMtimerStorage.length, 0, 'timer cleared and removed from storage');
-	// 	// 		assert.equal(window.MGMTinc.length, 0, 'incrementor storage wiped');
-	// 	// 		console.log('all cleared');
-	// 	// 		done2();
-	// 	// 	}, 750);
-	// 	// });
+		test('if a timer is set, and cleared by the wrong name it should not clear the timer', function(assert){
+			window.calltest = 0;
+			// window.activeFlag = true;
+			var tm = $.tMgmt(validOptionsIntervalNoInc);
+			var done1 = assert.async();
+			var done2 = assert.async();
+			setTimeout(function(){
+				tm.clear('wrongName');
+			}, 500);
+			setTimeout(function(){
+				tm.clear('testIntNoInc');
+				assert.equal(window.calltest, 1, 'wrongName did not clear timer before callback fired once');
+				done1();
+			}, 700);
+			setTimeout(function(){
+				assert.equal(window.TMtimerStorage.length, 0, 'timer cleared and removed from storage');
+				assert.equal(window.MGMTinc.length, 0, 'incrementor storage wiped');
+				done2();
+			}, 750);
+		});
 
 		test('if an interval w/callback (and no incrementor) is set, it should be able to be manually cancelled', function(assert){
 			window.calltest = 0;
@@ -657,7 +655,7 @@
 			assert.equal(window.MGMTinc.length, 0, "$.tMgmt should have cleared all the incrementors");
 		});
 
-		test('$.tMgmt should be able to accept an object of timers and clear them, and force trigger callbacks for each timer object with at trigger key & a value of true', function(assert){
+		test('$.tMgmt should be able to accept an array of objects with timer obs and clear them, and force trigger callbacks for each timer object with at trigger key & a value of true', function(assert){
 			validOptionsTimeoutNoInc.duration = 10000;
 			validOptionsTimeoutNoInc2.duration = 10000;
 			validOptionsTimeoutNoInc3.duration = 10000;
@@ -668,6 +666,27 @@
 			assert.equal(window.TMtimerStorage.length, 3, "$.tMgmt should have set a timer for each call");
 			assert.equal(window.MGMTinc.length, 3, "$.tMgmt should have set an incrementor for each call");
 			var timers = [{timer:tm1, trigger:true},{timer:tm2},{timer:tm3, trigger:true}];
+			$.tMgmt('clearAll', timers);
+			assert.equal(window.TMtimerStorage.length, 0, "$.tMgmt should have cleared all the timers");
+			assert.equal(window.MGMTinc.length, 0, "$.tMgmt should have cleared all the incrementors");
+			assert.equal(window.calltest, 2, "2 callbacks should all have fired once");
+		});
+
+		test('$.tMgmt should be able to accept an array of objects with timer name strings and clear them, and force trigger callbacks for each timer object with at trigger key & a value of true', function(assert){
+			validOptionsTimeoutNoInc.duration = 10000;
+			validOptionsTimeoutNoInc2.duration = 10000;
+			validOptionsTimeoutNoInc3.duration = 10000;
+			window.calltest = 0;
+			var tm1 = $.tMgmt(validOptionsTimeoutNoInc);
+			var tm2 = $.tMgmt(validOptionsTimeoutNoInc2);
+			var tm3 = $.tMgmt(validOptionsTimeoutNoInc3);
+			assert.equal(window.TMtimerStorage.length, 3, "$.tMgmt should have set a timer for each call");
+			assert.equal(window.MGMTinc.length, 3, "$.tMgmt should have set an incrementor for each call");
+			var timers = [
+				{timer:'testValidTNoInc', trigger:true},
+				{timer:'testValidTNoInc2'},
+				{timer:'testValidTNoInc3', trigger:true}
+			];
 			$.tMgmt('clearAll', timers);
 			assert.equal(window.TMtimerStorage.length, 0, "$.tMgmt should have cleared all the timers");
 			assert.equal(window.MGMTinc.length, 0, "$.tMgmt should have cleared all the incrementors");

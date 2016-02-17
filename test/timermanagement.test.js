@@ -10,6 +10,8 @@
    // $.tMgmt = function (options) { //, settings) {
     tMgmt = function (options) { //, settings) {
 
+        //***** BEGIN: properties and methods of plugin - initial processing begins after *****//
+
         // Default options.
         tMgmt.options = {
         };
@@ -24,7 +26,7 @@
         var workingGenericClearAll = null;
 
 
-        // encapulate private methods so they arent readily available
+        // encapsulate private methods so they arent readily available
         var privateMethods = {
 
             // check to see if the settings contained anything - exit returning chain if not
@@ -79,8 +81,9 @@
                         // loop through the array and it's member objects
                         for(var i=0; i<TMobs.length; i++){
 
-                            // get the name of the timer
-                            var Tname = TMobs[i].timer.options.name;
+                            // check if value of "timer" key is a string or a 
+                            // $tMgmt ob & get the name of the timer
+                            var Tname = (typeof TMobs[i].timer === 'string')? TMobs[i].timer: TMobs[i].timer.options.name;
 
                             // verify the presence of a force trigger flag
                             var Ttrigger = (TMobs[i].trigger !== undefined && TMobs[i].trigger === true)? true: false;
@@ -281,7 +284,7 @@
             },
 
             // clear the timer using a parameter to look for it's name
-            clearFromWindow: function(name){
+            clearFromWindow: function(name, local){
 
                 // apply default value to local
                 local = (typeof local === 'undefined')? false: local;
@@ -311,13 +314,13 @@
 
                 }
 
-                // // check nameIndex AND that it's not a local call
-                // if(!nameIndex && !local){
+                // check nameIndex AND that it's not a local call
+                if(!local && nameIndex === false){
 
-                //     // send a warning in the console so the operation doesnt fail completely silently
-                //     console.warn('No timer found with the name - '+name);
+                    // send a warning in the console so the operation doesnt fail completely silently
+                    console.warn('No timer found with the name - '+name);
 
-                // }
+                }
                 
             },
 
@@ -384,6 +387,9 @@
             }
 
         };
+
+        //***** END: properties and methods of plugin - initial processing, next *****//
+
 
         // determine if option is an initializing object or a method call (string)
         if(options instanceof Object){
