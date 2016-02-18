@@ -302,6 +302,7 @@
 			var done1 = assert.async();
 			var done2 = assert.async();
 			setTimeout(function(){
+				window.activeFlag = true;
 				tm.clear('testClearEarly');
 				assert.equal(window.calltest, null, 'timeout cleared before callback could be fired');
 				done1();

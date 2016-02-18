@@ -313,9 +313,9 @@
                     _self.removeTimerIncrementor(nameIndex, 'MGMTinc');
 
                 }
-
+                
                 // check nameIndex AND that it's not a local call
-                if(!local && nameIndex === false){
+                if(!local && nameIndex === false && window.TMtimerStorage.length > 0){
 
                     // send a warning in the console so the operation doesnt fail completely silently
                     console.warn('No timer found with the name - '+name);
