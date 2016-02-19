@@ -127,7 +127,7 @@ If you have multiple timers set with timeRmanagement & would like to clear more 
 
 
 
-## Multiple Timers – Clearing some & force triggering callbacks (some/none/all)
+## Multiple Timers – Clearing some & force triggering callbacks
 
 timeRmanagement is also able to force trigger callbacks when clearing a specified group of timers using the 'clearAll' convenience method.  In this instance instead of an array of timer objects or their names it will take an array of string litteral datastructures featuring a manditory 'timer' key and an optional 'trigger'...
 
