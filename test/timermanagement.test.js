@@ -476,8 +476,7 @@
 
         return {
             options: tMgmt.options,
-            clear: clear,
-            clearAll: clearAll
+            clear: clear
         }
         
     };

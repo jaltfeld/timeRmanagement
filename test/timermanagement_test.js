@@ -190,7 +190,6 @@
 			assert.equal(tm.removeTimer, undefined, "private method 'removeTimer' should not be available");
 			assert.equal(tm.removeIncrementor, undefined, "private method 'removeIncrementor' should not be available");
 			assert.equal(isFunc(tm.clear), true, "public method 'clear' should be available");
-			assert.equal(isFunc(tm.clearAll), true, "public method 'clearAll' should be available");
 		});
 		
 	});
