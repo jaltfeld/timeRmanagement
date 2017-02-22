@@ -21,7 +21,7 @@ timeRmanagement takes the a single string litteral argument of options, which co
   callback              //function: will run at the end of a timeout or every interval just like a regular timer
   
   // in action it looks like...
-  var singleArg = {
+  var validOptions = {
   	name: 'itsATimout',
   	duration: 5000,
   	timeout: true,
@@ -31,10 +31,10 @@ timeRmanagement takes the a single string litteral argument of options, which co
   }
   
   // or...
-  var singleArg = {
+  var validOptions = {
     name: 'nowItsAnInterval',
   	duration: 5000,
-  	timeout: true,
+  	interval: true,
   	incrementBy: 10,     //This will run 10 times & stop - or leave it out to let it run indefinitely (clear it manually later)
   	callback: function() {
   		alert('another five seconds went by!');
