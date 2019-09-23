@@ -22,23 +22,23 @@ timeRmanagement takes the a single object literal argument of options, which con
   
   // in action it looks like...
   var validOptions = {
-  	name: 'itsATimout',
-  	duration: 5000,
-  	timeout: true,
-  	callback: function() {
-  		alert('times up!')
-  	}
+    name: 'itsATimout',
+    duration: 5000,
+    timeout: true,
+    callback: function() {
+      alert('times up!')
+    }
   }
   
   // or...
   var validOptions = {
     name: 'nowItsAnInterval',
-  	duration: 5000,
-  	interval: true,
-  	incrementBy: 10,     //This will run 10 times & stop - or leave it out to let it run indefinitely (clear it manually later)
-  	callback: function() {
-  		alert('another five seconds went by!');
-  	}
+    duration: 5000,
+    interval: true,
+    incrementBy: 10,     //This will run 10 times & stop - or leave it out to let it run indefinitely (clear it manually later)
+    callback: function() {
+      alert('another five seconds went by!');
+    }
   }
 ```
 
@@ -137,18 +137,18 @@ timeRmanagement is also able to force trigger callbacks when clearing a specifie
 
   // the timer property can be set as the $.tMgmt return object OR the name of the timer
   var timers = [
-  		{
-  			timer: timer1, //or could be 'timerOne'
-  			trigger: true  //if you do not need to force trigger callback simply omit 
-  		},
-  		{
-  			 timer: 'timerTwo' //or could be timer2
-  		},
-  		{
-  			timer: timer4,
-  			trigger: true
-  		}
-  	];
+    {
+      timer: timer1, //or could be 'timerOne'
+      trigger: true  //if you do not need to force trigger callback simply omit 
+    },
+    {
+       timer: 'timerTwo' //or could be timer2
+    },
+    {
+      timer: timer4,
+      trigger: true
+    }
+  ];
   
   // then called...
   $.tMgmt('clearAll', timers);
