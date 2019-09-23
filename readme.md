@@ -11,12 +11,12 @@ The timeRmanagement plugin is a timer factory (for both timouts and intervals) w
 
 ## Setting a timer
 
-timeRmanagement takes the a single string litteral argument of options, which contains...
+timeRmanagement takes the a single object literal argument of options, which contains...
 
 ```html
   name                  //string: name of your timer ex: 'myTimer'
   duration              //number: duration of the timeout or interval 
-  timeout (or interval) //boolean: choose one, it's a timeout OR an interval
+  timeout (or interval) //boolean: choose one, true if it's a timeout OR false if it's an interval
   incrementBy           //number: optional & only for intervals set this to cycle "x" amount or omit it to go indefinitely
   callback              //function: will run at the end of a timeout or every interval just like a regular timer
   
@@ -89,12 +89,13 @@ If you would like to force the callback to run when the timer is cleared you can
 
 ## Multiple Timers – Clearing all timers
 
-If you have set multiple timers with timeRmanagement and you would like to clear them all there is a conveinience method on the plugin itself to do this, which can be invoked by passing an argument of 'clearAll' – ALL callbacks can also forced on each timer cleared with this method as well...
+If you have set multiple timers with timeRmanagement and you would like to clear them all there is a conveinience method on the plugin itself to do this, which can be invoked by passing an argument of 'clearAll' – any callbacks set on timers being cleared with this method can also be force triggered as well...
 
 ```html
   $tMgmt('clearAll');
 
-  // add the true again as the second parameter to force trigger callbacks of each timer cleared
+  // add the true again as the second parameter to force trigger 
+  // callbacks of any of the timers clearing that have callbacks
   $.tMgmt('clearAll', true);
 ```
 
@@ -102,7 +103,7 @@ If you have set multiple timers with timeRmanagement and you would like to clear
 
 ## Multiple Timers – Clearing only specific timers
 
-If you have multiple timers set with timeRmanagement & would like to clear more than one but not all the convenience method can still be referenced but in order to zero in on the timers you would like to destroy and leave the rest, an array of destroyable timers must be passed in as a second argument...
+If you have multiple timers set with timeRmanagement & would like to clear more than one but not all, the convenience method can still be referenced - but in order to zero in on the timers you would like to destroy, and leave the rest, an array of destroyable timers must be passed in as a second argument...
 
 ```html
   // set timers
@@ -152,7 +153,8 @@ timeRmanagement is also able to force trigger callbacks when clearing a specifie
   // then called...
   $.tMgmt('clearAll', timers);
   
-  // will force trigger callbacks on timer1 & timer4
+  // will clear & force trigger callbacks on timer1 & timer4
+  // will clear timer2 w/o forcing callback
   // will leave timer3 running
 ```
 
